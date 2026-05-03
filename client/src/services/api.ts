@@ -9,6 +9,17 @@ const API_BASE = (() => {
   return '/api';
 })();
 
+export function resolveAssetUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('http') || url.startsWith('data:') || url.startsWith('blob:')) {
+    return url;
+  }
+  if (typeof window === 'undefined') {
+    return url;
+  }
+  return `${window.location.origin}${url.startsWith('/') ? url : `/${url}`}`;
+}
+
 // ============ 类型定义 ============
 
 export interface User {
@@ -275,10 +286,10 @@ export const communityApi = {
 // ============ 管理员 API ============
 
 export const adminApi = {
-  async generateKeys(count: number, credits: number, plan: string): Promise<{ keys: any[] }> {
+  async generateKeys(count: number, credits: number, plan: string, targetUserId?: string): Promise<{ keys: any[] }> {
     return request<{ keys: any[] }>('/admin/keys/generate', {
       method: 'POST',
-      body: JSON.stringify({ count, credits, plan }),
+      body: JSON.stringify({ count, credits, plan, targetUserId }),
     });
   },
 
@@ -291,5 +302,9 @@ export const adminApi = {
 
   async getUsers(): Promise<{ users: any[]; pagination: any }> {
     return request<{ users: any[]; pagination: any }>('/admin/users');
+  },
+
+  async getPurchaseLogs(page = 1, limit = 50): Promise<{ logs: any[]; pagination: any }> {
+    return request<{ logs: any[]; pagination: any }>(`/admin/purchase-logs?page=${page}&limit=${limit}`);
   },
 };

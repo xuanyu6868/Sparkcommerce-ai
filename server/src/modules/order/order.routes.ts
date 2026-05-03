@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { createHmac, timingSafeEqual } from 'crypto';
 import prisma from '../../config/database.js';
 import { authMiddleware } from '../../shared/middlewares/auth.js';
 import { createError } from '../../shared/middlewares/errorHandler.js';
@@ -34,6 +35,21 @@ router.post('/create', authMiddleware, async (req: Request, res: Response, next:
         status: 'PENDING',
         userId: req.user!.userId,
       }
+    });
+
+    // 写入购买日志（管理员可查看）
+    await prisma.orderLog.create({
+      data: {
+        userId: req.user!.userId,
+        userEmail: req.user!.email || 'unknown',
+        plan,
+        amount: config.amount,
+        credits: config.credits,
+        orderNo,
+        status: 'PENDING',
+      }
+    }).catch((err) => {
+      console.warn('[OrderLog] 写入失败:', err.message);
     });
 
     res.status(201).json({
@@ -110,20 +126,30 @@ router.post('/callback', async (req: Request, res: Response, next: NextFunction)
         }
       });
 
+      // 同步更新订单日志
+      await prisma.orderLog.updateMany({
+        where: { orderNo },
+        data: { status: 'COMPLETED' }
+      }).catch(() => {});
+
       res.json({ message: '支付成功，请联系管理员发放卡密' });
     } else {
       await prisma.order.update({
         where: { orderNo },
         data: { status: 'FAILED' }
       });
+
+      await prisma.orderLog.updateMany({
+        where: { orderNo },
+        data: { status: 'FAILED' }
+      }).catch(() => {});
+
       res.json({ message: '支付失败' });
     }
   } catch (err) {
     next(err);
   }
 });
-
-import { createHmac, timingSafeEqual } from 'crypto';
 
 function verifyPaymentSignature(orderNo: string, status: string, signature: string): boolean {
   const secret = process.env.PAYMENT_SECRET;

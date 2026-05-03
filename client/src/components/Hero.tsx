@@ -271,18 +271,18 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
   };
 
   return (
-    <section className="pt-48 pb-20 px-6 relative z-10">
+    <section className="pt-36 sm:pt-48 pb-16 sm:pb-20 px-4 sm:px-6 relative z-10">
       <FloatingParticles />
 
       {/* Background Decor */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-[600px] bg-neon/5 blur-[120px] rounded-full -z-10 opacity-60" />
 
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-20">
+        <div className="text-center mb-12 sm:mb-20">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-7xl md:text-9xl font-impact tracking-tighter mb-8 text-stone-900 leading-tight uppercase italic select-none"
+            className="text-5xl sm:text-7xl md:text-9xl font-impact tracking-tighter mb-6 sm:mb-8 text-stone-900 leading-tight uppercase italic select-none"
           >
             <AnimatedWord text="开始生成" className="block" />
             <AnimatedWord
@@ -300,16 +300,16 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-stone-400 text-xl md:text-2xl font-medium tracking-tight flex flex-col md:flex-row items-center justify-center gap-3"
+            className="text-stone-400 text-base sm:text-xl md:text-2xl font-medium tracking-tight flex flex-col md:flex-row items-center justify-center gap-3"
           >
             <span>将文字瞬间编译为商业视觉资产</span>
             <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-stone-300"></span>
-            <span className="flex items-center gap-3 bg-stone-900 text-white rounded-full px-5 py-2 mt-2 md:mt-0 shadow-lg border border-stone-800">
+            <span className="flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 sm:gap-3 bg-stone-900 text-white rounded-2xl sm:rounded-full px-4 sm:px-5 py-2 mt-2 md:mt-0 shadow-lg border border-stone-800">
               <span className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-[#00FF00]" />
-                <span className="text-stone-300 font-medium text-base">搭载超强视觉大模型</span>
+                <span className="text-stone-300 font-medium text-sm sm:text-base">搭载超强视觉大模型</span>
               </span>
-              <span className="bg-gradient-to-r from-[#00FF00] to-green-400 text-black font-black px-3 py-1 rounded-full text-sm md:text-base tracking-wider shadow-[0_0_15px_rgba(0,255,0,0.4)]">
+              <span className="bg-gradient-to-r from-[#00FF00] to-green-400 text-black font-black px-3 py-1 rounded-full text-xs sm:text-sm md:text-base tracking-wider shadow-[0_0_15px_rgba(0,255,0,0.4)]">
                 GPT-IMAGE-2
               </span>
             </span>
@@ -320,7 +320,7 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3 }}
-          className="bg-white border-2 border-stone-100 p-4 rounded-[4rem] shadow-3xl shadow-stone-200/50"
+          className="bg-white border-2 border-stone-100 p-3 sm:p-4 rounded-[2rem] sm:rounded-[4rem] shadow-3xl shadow-stone-200/50"
         >
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <div className="relative">
@@ -328,37 +328,37 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="描述您的杰作... (例如: 一个在云端漫步的机械鲸鱼)"
-                className="w-full bg-stone-50/50 border-none rounded-[3rem] py-10 pl-12 pr-40 text-stone-900 placeholder:text-stone-300 focus:ring-4 focus:ring-neon/10 transition-all text-2xl font-bold leading-snug resize-none min-h-[220px]"
+                className="w-full bg-stone-50/50 border-none rounded-[2rem] sm:rounded-[3rem] py-7 sm:py-10 pl-6 sm:pl-12 pr-6 sm:pr-40 text-stone-900 placeholder:text-stone-300 focus:ring-4 focus:ring-neon/10 transition-all text-lg sm:text-2xl font-bold leading-snug resize-none min-h-[220px]"
               />
-              <div className="absolute right-6 bottom-6 flex items-center gap-4">
+              <div className="mt-4 sm:mt-0 sm:absolute sm:right-6 sm:bottom-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                 {prompt && (
                   <button
                     type="button"
                     onClick={() => setPrompt("")}
-                    className="p-4 text-stone-300 hover:text-stone-900 transition-colors uppercase text-xs font-black tracking-widest"
+                    className="self-end sm:self-auto p-2 sm:p-4 text-stone-300 hover:text-stone-900 transition-colors uppercase text-xs font-black tracking-widest"
                   >
                     清空
                   </button>
                 )}
-                <div className="flex items-center gap-1 bg-stone-100 rounded-full p-1">
+                <div className="flex items-center gap-1 bg-stone-100 rounded-full p-1 w-full sm:w-auto">
                   <button
                     type="button"
                     onClick={() => setIsMainImage(true)}
-                    className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all ${isMainImage ? 'bg-stone-900 text-neon' : 'text-stone-400'}`}
+                    className={`flex-1 sm:flex-none px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all ${isMainImage ? 'bg-stone-900 text-neon' : 'text-stone-400'}`}
                   >
                     主图
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsMainImage(false)}
-                    className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all ${!isMainImage ? 'bg-stone-900 text-neon' : 'text-stone-400'}`}
+                    className={`flex-1 sm:flex-none px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all ${!isMainImage ? 'bg-stone-900 text-neon' : 'text-stone-400'}`}
                   >
                     详情图
                   </button>
                 </div>
                 <button
                   disabled={isGenerating || !prompt.trim() || credits < 5}
-                  className="bg-stone-900 text-white px-12 py-5 rounded-[2rem] font-black text-lg hover:bg-neon hover:text-black hover:shadow-[0_0_30px_rgba(0,255,0,0.4)] disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center gap-3 shadow-2xl shadow-stone-200 active:scale-95 duration-300"
+                  className="w-full sm:w-auto justify-center bg-stone-900 text-white px-8 sm:px-12 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] font-black text-base sm:text-lg hover:bg-neon hover:text-black hover:shadow-[0_0_30px_rgba(0,255,0,0.4)] disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center gap-3 shadow-2xl shadow-stone-200 active:scale-95 duration-300"
                 >
                   {isGenerating ? (
                     <Loader2 className="w-6 h-6 animate-spin" />
@@ -370,10 +370,10 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
               </div>
             </div>
 
-            <div className="flex flex-col xl:flex-row xl:items-end justify-between px-10 pb-8 gap-6">
+            <div className="flex flex-col xl:flex-row xl:items-end justify-between px-3 sm:px-10 pb-6 sm:pb-8 gap-6">
               <div className="flex flex-wrap items-start gap-3 xl:gap-4 flex-1 overflow-visible w-full">
                 <div
-                  className={`relative shrink-0 ${openDropdown === "ratio" ? "z-50" : "z-20"}`}
+                  className={`relative shrink-0 w-[calc(50%-0.375rem)] sm:w-auto ${openDropdown === "ratio" ? "z-50" : "z-20"}`}
                 >
                   <label className="text-[11px] uppercase font-black text-stone-300 block mb-3 tracking-[0.2em] px-1">
                     生成比例
@@ -381,7 +381,7 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
                   <button
                     type="button"
                     onClick={() => toggleDropdown("ratio")}
-                    className="w-[140px] px-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-stone-900 text-sm font-black uppercase tracking-widest flex items-center justify-between hover:border-stone-400 transition-all shadow-sm"
+                    className="w-full sm:w-[140px] px-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-stone-900 text-sm font-black uppercase tracking-widest flex items-center justify-between hover:border-stone-400 transition-all shadow-sm"
                   >
                     <div className="flex items-center gap-3">
                       {ASPECT_RATIOS.find((r) => r.value === aspectRatio)
@@ -427,7 +427,7 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
                 </div>
 
                 <div
-                  className={`relative shrink-0 ${openDropdown === "style" ? "z-50" : "z-20"}`}
+                  className={`relative shrink-0 w-[calc(50%-0.375rem)] sm:w-auto ${openDropdown === "style" ? "z-50" : "z-20"}`}
                 >
                   <label className="text-[11px] uppercase font-black text-stone-300 block mb-3 tracking-[0.2em] px-1">
                     引擎风格
@@ -435,7 +435,7 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
                   <button
                     type="button"
                     onClick={() => toggleDropdown("style")}
-                    className="w-[140px] px-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-stone-900 text-sm font-black uppercase tracking-widest flex items-center justify-between hover:border-stone-400 transition-all shadow-sm"
+                    className="w-full sm:w-[140px] px-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-stone-900 text-sm font-black uppercase tracking-widest flex items-center justify-between hover:border-stone-400 transition-all shadow-sm"
                   >
                     <div className="flex items-center gap-3">
                       {STYLES.find((s) => s.id === selectedStyle)?.icon &&
@@ -476,7 +476,7 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
                 </div>
 
                 <div
-                  className={`relative shrink-0 ${openDropdown === "mainImage" ? "z-50" : "z-20"}`}
+                  className={`relative shrink-0 w-[calc(50%-0.375rem)] sm:w-auto ${openDropdown === "mainImage" ? "z-50" : "z-20"}`}
                 >
                   <label className="text-[11px] uppercase font-black text-stone-300 block mb-3 tracking-[0.2em] px-1">
                     商品主图
@@ -484,7 +484,7 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
                   <button
                     type="button"
                     onClick={() => toggleDropdown("mainImage")}
-                    className="w-[140px] px-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-stone-900 text-sm font-black uppercase tracking-widest flex items-center justify-between hover:border-stone-400 transition-all shadow-sm truncate"
+                    className="w-full sm:w-[140px] px-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-stone-900 text-sm font-black uppercase tracking-widest flex items-center justify-between hover:border-stone-400 transition-all shadow-sm truncate"
                   >
                     <div className="flex items-center gap-3 truncate">
                       {MAIN_IMAGE_STYLES.find((s) => s.id === mainImageStyle)
@@ -533,7 +533,7 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
                 </div>
 
                 <div
-                  className={`relative shrink-0 ${openDropdown === "detailImage" ? "z-50" : "z-20"}`}
+                  className={`relative shrink-0 w-[calc(50%-0.375rem)] sm:w-auto ${openDropdown === "detailImage" ? "z-50" : "z-20"}`}
                 >
                   <label className="text-[11px] uppercase font-black text-stone-300 block mb-3 tracking-[0.2em] px-1">
                     商品详情图
@@ -541,7 +541,7 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
                   <button
                     type="button"
                     onClick={() => toggleDropdown("detailImage")}
-                    className="w-[140px] px-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-stone-900 text-sm font-black uppercase tracking-widest flex items-center justify-between hover:border-stone-400 transition-all shadow-sm truncate"
+                    className="w-full sm:w-[140px] px-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-stone-900 text-sm font-black uppercase tracking-widest flex items-center justify-between hover:border-stone-400 transition-all shadow-sm truncate"
                   >
                     <div className="flex items-center gap-3 truncate">
                       {DETAIL_IMAGE_STYLES.find(
@@ -592,7 +592,7 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
                 </div>
 
                 <div
-                  className={`relative shrink-0 ${openDropdown === "commerce" ? "z-50" : "z-20"}`}
+                  className={`relative shrink-0 w-[calc(50%-0.375rem)] sm:w-auto ${openDropdown === "commerce" ? "z-50" : "z-20"}`}
                 >
                   <label className="text-[11px] uppercase font-black text-stone-300 block mb-3 tracking-[0.2em] px-1">
                     电商风格
@@ -600,7 +600,7 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
                   <button
                     type="button"
                     onClick={() => toggleDropdown("commerce")}
-                    className="w-[140px] px-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-stone-900 text-sm font-black uppercase tracking-widest flex items-center justify-between hover:border-stone-400 transition-all shadow-sm truncate"
+                    className="w-full sm:w-[140px] px-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-stone-900 text-sm font-black uppercase tracking-widest flex items-center justify-between hover:border-stone-400 transition-all shadow-sm truncate"
                   >
                     <div className="flex items-center gap-3 truncate">
                       {COMMERCE_STYLES.find((s) => s.id === commerceStyle)

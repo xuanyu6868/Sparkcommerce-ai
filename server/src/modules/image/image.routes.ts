@@ -6,6 +6,9 @@ import { aiConfig, IMAGE_API_ENDPOINT, isAiConfigured } from '../../config/ai.js
 import { authMiddleware } from '../../shared/middlewares/auth.js';
 import { createError } from '../../shared/middlewares/errorHandler.js';
 import { downloadAndSaveImage, saveImageLocally } from '../../shared/utils/storage.js';
+import { isOssConfigured } from '../../config/oss.js';
+import { uploadToOSS } from '../../shared/services/oss.js';
+import { join } from 'path';
 
 const router = Router();
 
@@ -57,7 +60,18 @@ router.post('/generate', authMiddleware, async (req: Request, res: Response, nex
     if (!isAiConfigured()) {
       throw createError('AI 图片生成服务未配置，请在 .env 中设置 AI_API_KEY', 503);
     }
-    const imageUrl = await callMiniMaxAPI(assembled.finalPrompt, aspectRatio);
+    const localUrl = await callMiniMaxAPI(assembled.finalPrompt, aspectRatio);
+
+    // ✅ OSS 上传：如果配置了 OSS，将图片上传到阿里云 OSS
+    let finalUrl = localUrl;
+    if (isOssConfigured()) {
+      try {
+        const localFilePath = join(process.cwd(), 'server', localUrl);
+        finalUrl = await uploadToOSS(localFilePath);
+      } catch (err) {
+        console.warn('[Image] OSS 上传失败，使用本地路径:', err);
+      }
+    }
 
     // 获取图片尺寸
     const dimensions = promptEngine.getImageDimensions(aspectRatio);
@@ -71,7 +85,7 @@ router.post('/generate', authMiddleware, async (req: Request, res: Response, nex
     // 保存到数据库
     const image = await prisma.image.create({
       data: {
-        url: imageUrl,
+        url: finalUrl,
         prompt: prompt,
         assembledPrompt: assembled.finalPrompt,
         aspectRatio,
@@ -293,6 +307,8 @@ async function callMiniMaxAPI(
   const tryQualities = [aiConfig.quality, 'low'].filter((q, i, arr) => arr.indexOf(q) === i);
   let lastError: unknown = null;
 
+  console.log(`[AI] 开始生成图片: model=${aiConfig.model} size=${size} timeout=${aiConfig.timeoutMs}ms endpoint=${IMAGE_API_ENDPOINT}`);
+
   for (const quality of tryQualities) {
     try {
       const body: Record<string, any> = {
@@ -308,6 +324,8 @@ async function callMiniMaxAPI(
       if (aiConfig.baseUrl.includes('api.openai.com')) {
         body.response_format = 'b64_json';
       }
+
+      console.log(`[AI] 尝试 quality=${quality} size=${size}，超时=${aiConfig.timeoutMs}ms`);
 
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), aiConfig.timeoutMs);
@@ -349,22 +367,38 @@ async function callMiniMaxAPI(
     } catch (err: any) {
       lastError = err;
       const msg = String(err?.message || err || '');
-      console.warn(`[AI retry] quality=${quality} failed: ${msg}`);
-      if (!msg.includes('AbortError') && !msg.includes('timeout') && !msg.includes('5')) {
-        break;
+      const errName = err?.name || '';
+      console.warn(`[AI retry] quality=${quality} failed: name=${errName} message=${msg}`);
+      // AbortError / timeout / 5xx → 尝试降质重试
+      if (
+        msg.includes('AbortError') ||
+        msg.includes('aborted') ||
+        msg.includes('timeout') ||
+        msg.includes('TimedOut') ||
+        msg.includes('5') ||
+        errName === 'AbortError'
+      ) {
+        console.warn(`[AI] 将降级 quality 重试...`);
+        continue;
       }
+      // 其他错误（4xx、无效 apikey 等）→ 直接终止，不重试
+      console.error(`[AI] 非重试类错误，终止：${msg}`);
+      break;
     }
   }
 
-  throw lastError instanceof Error ? lastError : new Error('图片生成失败');
+  // 构建更详细的错误信息
+  const lastMsg = lastError instanceof Error ? lastError.message : String(lastError || '');
+  throw new Error(`AI 图片生成失败（已重试 ${tryQualities.length} 次）: ${lastMsg}`);
 }
 
 function aspectRatioToSize(ratio: string): string {
+  // 使用 OpenAI 标准尺寸（gpt-image-2 / dall-e-3 兼容）
   const map: Record<string, string> = {
     '1:1': '1024x1024',
     '4:3': '1024x768',
-    '16:9': '1536x1024',
-    '9:16': '1024x1536',
+    '16:9': '1792x1024',    // ← 改为标准尺寸
+    '9:16': '1024x1792',   // ← 改为标准尺寸
     '3:4': '1024x1536',
   };
   return map[ratio] || '1024x1024';

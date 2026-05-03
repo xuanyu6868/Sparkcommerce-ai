@@ -1,70 +1,108 @@
 /**
- * 本地文件存储工具
+ * 图片存储工具 — 阿里云 OSS（未配置时降级为本地存储）
+ *
+ * 配置项：
+ *   OSS_REGION, OSS_BUCKET, OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET
  */
 
+import OSS from 'ali-oss';
+import { v4 as uuidv4 } from 'uuid';
 import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
-const UPLOAD_DIR = join(process.cwd(), 'uploads');
+let client: OSS | null = null;
 
-// 确保上传目录存在
-async function ensureUploadDir(): Promise<void> {
-  if (!existsSync(UPLOAD_DIR)) {
-    await mkdir(UPLOAD_DIR, { recursive: true });
+function isOssConfigured(): boolean {
+  return !!(process.env.OSS_REGION && process.env.OSS_BUCKET && process.env.OSS_ACCESS_KEY_ID && process.env.OSS_ACCESS_KEY_SECRET);
+}
+
+function getClient(): OSS {
+  if (client) return client;
+  client = new OSS({
+    region: process.env.OSS_REGION!,
+    bucket: process.env.OSS_BUCKET!,
+    accessKeyId: process.env.OSS_ACCESS_KEY_ID!,
+    accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET!,
+    secure: true,
+  });
+  return client;
+}
+
+function getCdnBase(): string {
+  const customCdn = process.env.OSS_CDN_URL;
+  if (customCdn) return customCdn.replace(/\/+$/, '');
+  return `https://${process.env.OSS_BUCKET}.${process.env.OSS_REGION}.aliyuncs.com`;
+}
+
+// ============ 本地存储降级 ============
+
+const LOCAL_DIR = join(process.cwd(), 'uploads');
+
+async function ensureLocalDir(): Promise<void> {
+  if (!existsSync(LOCAL_DIR)) {
+    await mkdir(LOCAL_DIR, { recursive: true });
+  }
+}
+
+async function saveToLocal(imageData: string, filename: string): Promise<void> {
+  await ensureLocalDir();
+  const filepath = join(LOCAL_DIR, filename);
+  if (imageData.startsWith('data:')) {
+    const base64Data = imageData.split(',')[1];
+    await writeFile(filepath, Buffer.from(base64Data, 'base64'));
+  } else if (imageData.startsWith('http')) {
+    const response = await fetch(imageData);
+    if (!response.ok) throw new Error(`Download failed: ${response.statusText}`);
+    await writeFile(filepath, Buffer.from(await response.arrayBuffer()));
+  } else {
+    throw new Error('Invalid image data format');
   }
 }
 
 /**
- * 保存图片到本地
- * @param imageData Base64 或 URL
+ * 将图片数据上传至 OSS，返回可公开访问的 CDN URL
+ * @param imageData Base64 或图片 URL
  * @param extension 文件扩展名
  */
 export async function saveImageLocally(
   imageData: string,
   extension: string = 'png'
 ): Promise<string> {
-  await ensureUploadDir();
-
   const filename = `${uuidv4()}.${extension}`;
-  const filepath = join(UPLOAD_DIR, filename);
 
-  // 判断是 Base64 还是 URL
-  if (imageData.startsWith('data:')) {
-    // Base64 格式: data:image/png;base64,xxxxx
-    const base64Data = imageData.split(',')[1];
-    const buffer = Buffer.from(base64Data, 'base64');
-    await writeFile(filepath, buffer);
-  } else if (imageData.startsWith('http')) {
-    // URL 格式：下载并保存
-    const response = await fetch(imageData);
-    if (!response.ok) {
-      throw new Error(`Failed to download image: ${response.statusText}`);
+  if (isOssConfigured()) {
+    const key = `images/${filename}`;
+    const cdnBase = getCdnBase();
+    const ossClient = getClient();
+
+    if (imageData.startsWith('data:')) {
+      const base64Data = imageData.split(',')[1];
+      await ossClient.put(key, Buffer.from(base64Data, 'base64'));
+    } else if (imageData.startsWith('http')) {
+      const response = await fetch(imageData);
+      if (!response.ok) throw new Error(`Download failed: ${response.statusText}`);
+      await ossClient.put(key, Buffer.from(await response.arrayBuffer()));
+    } else {
+      throw new Error('Invalid image data format');
     }
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    await writeFile(filepath, buffer);
-  } else {
-    throw new Error('Invalid image data format');
+
+    return `${cdnBase}/${key}`;
   }
 
-  // 返回相对路径（用于 API 访问）
+  // 降级：保存到本地
+  await saveToLocal(imageData, filename);
   return `/uploads/${filename}`;
 }
 
 /**
- * 从 URL 下载图片并保存到本地
+ * 从 URL 下载图片并上传到 OSS
  */
 export async function downloadAndSaveImage(imageUrl: string): Promise<string> {
-  // 根据 URL 推断扩展名
   const extension = getExtensionFromUrl(imageUrl) || 'png';
   return saveImageLocally(imageUrl, extension);
 }
 
-/**
- * 从 URL 获取扩展名
- */
 function getExtensionFromUrl(url: string): string | null {
   try {
     const pathname = new URL(url).pathname;
@@ -73,7 +111,7 @@ function getExtensionFromUrl(url: string): string | null {
       return ext;
     }
   } catch {
-    // 无效 URL
+    // noop
   }
   return null;
 }

@@ -247,6 +247,8 @@ export const CardStack = ({ mini = false, items, onImageClick }: { mini?: boolea
                 transform: 'translateZ(0)'
               }}
               alt={card.title}
+              loading="lazy"
+              decoding="async"
               referrerPolicy="no-referrer"
             />
             {/* Card Info Overlay */}
@@ -275,13 +277,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
     <div className="min-h-screen bg-white selection:bg-neon selection:text-black relative">
       <ParticleBackground />
       {/* Hero Section */}
-      <section className="pt-40 md:pt-60 pb-40 px-6 relative z-10">
+      <section className="pt-36 md:pt-60 pb-24 md:pb-40 px-4 sm:px-6 relative z-10">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "circOut" }}
-            className="inline-flex items-center gap-3 px-6 py-2.5 bg-stone-50 border border-stone-100 rounded-full text-stone-900 text-xs font-black uppercase tracking-[0.2em] mb-12 shadow-sm"
+            className="inline-flex items-center gap-3 px-4 sm:px-6 py-2.5 bg-stone-50 border border-stone-100 rounded-full text-stone-900 text-[10px] sm:text-xs font-black uppercase tracking-[0.16em] sm:tracking-[0.2em] mb-8 md:mb-12 shadow-sm"
           >
             <span className="h-2 w-2 rounded-full bg-neon animate-pulse" />
             睿思星启 — 电商视觉革命
@@ -291,11 +293,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "circOut" }}
-            className="text-7xl md:text-[8rem] font-impact tracking-tighter text-stone-900 mb-12 leading-tight uppercase flex flex-col items-center select-none pl-4 md:pl-8"
+            className="text-5xl sm:text-7xl md:text-[8rem] font-impact tracking-tighter text-stone-900 mb-8 md:mb-12 leading-tight uppercase flex flex-col items-center select-none pl-0 sm:pl-4 md:pl-8"
           >
             <AnimatedWord text="一站生成！" className="block italic" hoverColor="currentColor" />
             <AnimatedWord text="全平台电商视觉" className="block text-neon -rotate-2" hoverColor="#00ff00" />
-            <div className="flex font-display text-stone-900 leading-tight">
+            <div className="flex flex-wrap justify-center font-display text-stone-900 leading-tight">
               <AnimatedWord text="秒级响应出" className="" hoverColor="currentColor" />
               <AnimatedWord text="爆款" className="text-red-500" hoverColor="#ef4444" />
             </div>
@@ -305,7 +307,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-stone-400 text-2xl md:text-3xl mb-16 max-w-4xl mx-auto font-medium leading-tight tracking-tight"
+            className="text-stone-400 text-base sm:text-2xl md:text-3xl mb-10 sm:mb-16 max-w-4xl mx-auto font-medium leading-tight tracking-tight"
           >
             小红书爆款图 · 高转化电商主图 · 详情页自动生成<br />
             无缝覆盖淘宝、抖音、拼多多、Amazon、Shopee、SHEIN、Temu 等国内外核心赛道。
@@ -335,8 +337,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
       </section>
 
       {/* Feature Grid - Bento Style */}
-      <section className="py-32 px-6 bg-white overflow-hidden">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
+      <section className="py-20 sm:py-32 px-4 sm:px-6 bg-white overflow-hidden">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-6 sm:gap-10">
             <FeatureCard 
               icon={<Zap className="w-12 h-12" />}
               title="极速"
@@ -359,7 +361,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
       </section>
 
       {/* New Enhanced Showcase Section - "The Real World" */}
-      <section className="py-20 px-6 bg-white overflow-hidden">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="mb-16">
             <motion.div
@@ -370,7 +372,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
               流量主图引擎
             </motion.div>
             <motion.h2 
-              className="text-7xl font-impact italic uppercase leading-tight tracking-tighter mb-6 text-red-500 cursor-default select-none origin-left"
+            className="text-5xl sm:text-7xl font-impact italic uppercase leading-tight tracking-tighter mb-6 text-red-500 cursor-default select-none origin-left"
             >
               <motion.span 
                 whileHover={{ x: 20, scale: 1.05, color: "#ff0000" }} 
@@ -415,15 +417,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
         transition={{ delay: i * 0.1 }}
         viewport={{ once: true }}
         onClick={() => setSelectedImage({ id: `showcase-${i}`, url: item.url, prompt: item.desc, tags: ['展示样例', item.title] })}
-        className="group relative cursor-pointer aspect-square rounded-[3rem] overflow-hidden bg-stone-50 border border-stone-100 shadow-sm hover:shadow-2xl transition-all duration-500"
+        className="group relative cursor-pointer aspect-square rounded-[2rem] sm:rounded-[3rem] overflow-hidden bg-stone-50 border border-stone-100 shadow-sm hover:shadow-2xl transition-all duration-500"
       >
         <img 
           src={item.url} 
           className="w-full h-full object-contain transition-transform duration-1000 group-hover:scale-105 p-4" 
           alt={item.title}
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-900/90 via-black/40 to-transparent p-10 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-500">
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-900/90 via-black/40 to-transparent p-6 sm:p-10 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-500">
           <div className="absolute top-8 right-8 transform translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500 delay-100">
             <button className="bg-white/20 backdrop-blur-md p-3 rounded-full text-white hover:bg-white hover:text-stone-900 transition-colors shadow-lg">
               <Search className="w-5 h-5" />
@@ -444,7 +449,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
       </section>
 
       {/* Stats Section - Horizontal Bar Charts */}
-      <section className="py-40 px-6 bg-stone-900 text-white rounded-[5rem] mx-6 my-20 shadow-3xl shadow-stone-200 relative overflow-hidden">
+      <section className="py-24 sm:py-40 px-4 sm:px-6 bg-stone-900 text-white rounded-[2.5rem] sm:rounded-[5rem] mx-3 sm:mx-6 my-14 sm:my-20 shadow-3xl shadow-stone-200 relative overflow-hidden">
         {/* Floating Decorative Elements */}
         <motion.div 
           animate={{ 
@@ -513,9 +518,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
                 viewport={{ once: true }}
                 className="group"
               >
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                   <div className="flex items-baseline gap-6">
-                    <h3 className="text-3xl font-black italic tracking-tight text-white whitespace-nowrap">{stat.label}</h3>
+                    <h3 className="text-2xl sm:text-3xl font-black italic tracking-tight text-white whitespace-nowrap">{stat.label}</h3>
                     <span className="text-stone-500 text-xs font-black uppercase tracking-widest hidden md:block">{stat.painPoint}</span>
                   </div>
                   <div className="text-neon text-5xl md:text-6xl font-impact tracking-tighter flex items-center">
@@ -558,11 +563,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
 
 
       {/* Showcase - Immersive */}
-      <section className="py-40 px-6 bg-white overflow-hidden">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-20 items-center">
+      <section className="py-24 sm:py-40 px-4 sm:px-6 bg-white overflow-hidden">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-14 md:gap-20 items-center">
             <div className="flex-1">
               <motion.h2 
-                className="text-6xl font-black tracking-tighter uppercase mb-8 leading-tight cursor-default"
+                className="text-4xl sm:text-6xl font-black tracking-tighter uppercase mb-6 sm:mb-8 leading-tight cursor-default"
               >
                 <AnimatedWord text="白底图变" className="block" />
                 <AnimatedWord text="爆款高点击主图" className="text-stone-300 block italic" delay={0.2} />
@@ -572,7 +577,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="text-stone-400 text-2xl font-medium mb-12 leading-snug"
+                className="text-stone-400 text-lg sm:text-2xl font-medium mb-8 sm:mb-12 leading-snug"
               >
                 只需一张普通底图，即刻激发商业视觉潜能。<br />
                 让每一张图都具备“自发性流量”的视觉吸引力。
@@ -582,7 +587,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
                   onClick={onStart} 
                   whileHover={{ scale: 1.05, filter: "brightness(1.1)" }}
                   whileTap={{ scale: 0.95 }}
-                  className="custom-ripple-button h-16 px-10 text-lg font-impact uppercase italic tracking-wider transition-all"
+                  className="custom-ripple-button h-14 sm:h-16 px-7 sm:px-10 text-base sm:text-lg font-impact uppercase italic tracking-wider transition-all"
                 >
                   <span className="mr-3">立即预览效果</span>
                   <svg width="24" height="24" viewBox="0 0 100 100">
@@ -605,22 +610,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
       </section>
 
       {/* How it works - Minimal Steps */}
-      <section className="py-40 px-6 border-t border-stone-50">
+      <section className="py-24 sm:py-40 px-4 sm:px-6 border-t border-stone-50">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-24">
+          <div className="grid md:grid-cols-3 gap-12 md:gap-24">
             {[
               { step: "01", title: "上传底图", desc: "上传商品原型图或 3D 模型渲染底图。" },
               { step: "02", title: "匹配场景", desc: "输入场景关键词，AI 智能匹配商业意境。" },
               { step: "03", title: "极速出图", desc: "秒级生成超高清商业大片，直接用于商用。" }
             ].map((item, i) => (
               <div key={i} className="group cursor-default">
-                <div className="text-9xl font-black text-stone-100 mb-8 tracking-tighter transition-colors duration-500 overflow-hidden">
+                <div className="text-7xl sm:text-9xl font-black text-stone-100 mb-5 sm:mb-8 tracking-tighter transition-colors duration-500 overflow-hidden">
                   <AnimatedWord text={item.step} className="" />
                 </div>
-                <h3 className="text-4xl font-black mb-4 tracking-tight uppercase italic">
+                <h3 className="text-3xl sm:text-4xl font-black mb-4 tracking-tight uppercase italic">
                   <AnimatedWord text={item.title} className="" />
                 </h3>
-                <p className="text-stone-400 text-xl font-medium leading-tight group-hover:text-stone-600 transition-colors duration-300">{item.desc}</p>
+                <p className="text-stone-400 text-base sm:text-xl font-medium leading-tight group-hover:text-stone-600 transition-colors duration-300">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -628,11 +633,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
       </section>
 
       {/* Gallery Highlight */}
-      <section className="py-40 px-6 bg-stone-50 rounded-[5rem] mx-6">
+      <section className="py-24 sm:py-40 px-4 sm:px-6 bg-stone-50 rounded-[2.5rem] sm:rounded-[5rem] mx-3 sm:mx-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-24 gap-8">
+          <div className="flex flex-col md:flex-row items-end justify-between mb-14 sm:mb-24 gap-8">
             <div className="max-w-xl">
-              <h2 className="text-8xl md:text-[8rem] font-impact tracking-tighter leading-tight uppercase mb-8 italic">
+              <h2 className="text-5xl sm:text-8xl md:text-[8rem] font-impact tracking-tighter leading-tight uppercase mb-6 sm:mb-8 italic">
                 <AnimatedWord text="世界级" className="block" />
                 <div className="flex flex-wrap">
                   <AnimatedWord text="艺术" className="mr-4" />
@@ -641,14 +646,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
               </h2>
               <motion.p 
                 whileHover={{ x: 10 }}
-                className="text-stone-400 text-2xl md:text-3xl font-medium transition-all duration-300"
+                className="text-stone-400 text-lg sm:text-2xl md:text-3xl font-medium transition-all duration-300"
               >
                 来自全球顶尖创作者的灵感火花。
               </motion.p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
             <div className="aspect-[3/4] relative group">
                <CardStack mini onImageClick={(image) => setSelectedImage({ id: `card-mini-${image.title}`, url: image.url, prompt: image.engine, tags: ['展示样例', image.title] })} />
             </div>
@@ -674,7 +679,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
         </div>
       </section>
 
-      <footer className="py-32 px-6 text-center border-t border-stone-50">
+      <footer className="py-20 sm:py-32 px-4 sm:px-6 text-center border-t border-stone-50">
         <div className="flex items-center justify-center gap-2 mb-8 scale-150">
           <div className="w-8 h-8 bg-stone-900 rounded-lg flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-white" />

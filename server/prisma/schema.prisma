@@ -110,15 +110,35 @@ model Order {
 // ============================================
 
 model RedeemKey {
-  id          String   @id @default(cuid())
-  code        String   @unique
-  credits     Int
-  plan        String?
-  used        Boolean  @default(false)
-  usedBy      String?
-  usedAt      DateTime?
-  createdBy   String?
-  createdAt   DateTime @default(now())
+  id            String   @id @default(cuid())
+  code          String   @unique
+  credits       Int
+  plan          String?
+  used          Boolean  @default(false)
+  usedBy        String?                    // 兑换的用户ID
+  usedAt        DateTime?
+  createdBy     String?                    // 创建者（管理员ID）
+  targetUserId  String?                    // 发放给哪个用户（可选）
+  createdAt     DateTime @default(now())
 
   @@map("redeem_keys")
+}
+
+// ============================================
+// 购买日志（管理员查看谁在什么时候下了单）
+// ============================================
+
+model OrderLog {
+  id        String   @id @default(cuid())
+  userId    String
+  userEmail String
+  userName  String?
+  plan      String
+  amount    Int
+  credits   Int
+  orderNo   String   @unique
+  status    String   @default("PENDING")    // PENDING | COMPLETED | FAILED
+  createdAt DateTime @default(now())
+
+  @@map("order_logs")
 }

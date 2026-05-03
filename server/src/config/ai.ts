@@ -27,7 +27,8 @@ export const aiConfig: AIConfig = {
   model: process.env.AI_MODEL || 'gpt-image-2',
   // 默认改为 medium，显著降低单次生成耗时
   quality: process.env.AI_QUALITY || 'medium',
-  timeoutMs: Number(process.env.AI_REQUEST_TIMEOUT_MS || 180000),
+  // 给高质生成留足余量；如有需要可环境变量覆盖
+  timeoutMs: Number(process.env.AI_REQUEST_TIMEOUT_MS || 300000),
 };
 
 function normalizeBaseUrl(url: string): string {

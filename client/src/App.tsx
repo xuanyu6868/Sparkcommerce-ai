@@ -13,12 +13,10 @@ import { Community } from './components/Community';
 import { Pricing } from './components/Pricing';
 import { Profile } from './components/Profile';
 import { AuthPage } from './components/AuthPage';
-import { authApi, userApi, imageApi, getToken } from './services/api';
+import { authApi, userApi, imageApi, getToken, resolveAssetUrl } from './services/api';
 import { ContactFooter } from './components/ContactFooter';
 import { CompanyProfileTransition } from './components/CompanyProfileTransition';
 import { AdminPanel } from './components/AdminPanel';
-
-const IMAGE_BASE = 'http://localhost:3001';
 
 const SAMPLE_IMAGES: ImageItem[] = [
   {
@@ -61,6 +59,14 @@ const SAMPLE_IMAGES: ImageItem[] = [
       { url: '/电动牙刷AI生成图.png', title: '商业渲染', engine: '神经渲染引擎' }
     ]
   }
+];
+
+const WARMUP_IMAGES = [
+  '/保鲜盒主图.png',
+  '/帆布包主图.png',
+  '/无线鼠标主图.png',
+  '/cup_raw.png',
+  '/cup_rendered.png',
 ];
 
 type AppView = 'home' | 'studio' | 'community' | 'pricing' | 'profile' | 'auth' | 'discover' | 'admin';
@@ -109,6 +115,24 @@ export default function App() {
           setUser(null);
         });
     }
+  }, []);
+
+  useEffect(() => {
+    const preload = () => {
+      WARMUP_IMAGES.forEach((src) => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.src = src;
+      });
+    };
+
+    if ('requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(preload, { timeout: 1500 });
+      return () => window.cancelIdleCallback(id);
+    }
+
+    const timer = window.setTimeout(preload, 800);
+    return () => window.clearTimeout(timer);
   }, []);
 
   const handleLogin = useCallback(() => {
@@ -175,9 +199,7 @@ export default function App() {
       // 转换后端图片格式为前端格式（拼接后端地址）
       const newImage: ImageItem = {
         id: response.image.id,
-        url: response.image.url.startsWith('http')
-          ? response.image.url
-          : `${IMAGE_BASE}${response.image.url}`,
+        url: resolveAssetUrl(response.image.url),
         prompt: response.image.prompt,
         assembledPrompt: response.image.assembledPrompt,
         tags: ['AI 生成', '创作者系列'],

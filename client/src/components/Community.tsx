@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Users, Zap, Heart, ArrowRight, Wand2, LayoutGrid, Copy, Download, Check, Loader2 } from 'lucide-react';
-import { communityApi } from '../services/api';
+import { communityApi, resolveAssetUrl } from '../services/api';
 
 const AnimatedWord = ({ text, className, delay = 0, hoverColor }: { text: string; className: string; delay?: number; hoverColor?: string }) => {
   return (
@@ -279,6 +279,8 @@ const ActivityItem: React.FC<{ i: number }> = ({ i }) => {
               src={displayImageUrl} 
               className="w-full h-full object-cover transition-transform duration-[4s] group-hover/img:scale-105" 
               alt="Artwork"
+              loading="lazy"
+              decoding="async"
               referrerPolicy="no-referrer"
             />
           )}
@@ -297,7 +299,7 @@ const ActivityItem: React.FC<{ i: number }> = ({ i }) => {
                 !selectedImage ? 'border-stone-400 shadow-md scale-100' : 'border-transparent opacity-60 hover:opacity-100 scale-95 hover:scale-100 hover:shadow-sm'
               }`}
             >
-              <img src={mainImageUrl} className="w-full h-full object-cover" alt="Main Thumb" referrerPolicy="no-referrer" />
+              <img src={mainImageUrl} className="w-full h-full object-cover" alt="Main Thumb" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
             </div>
             {detailsImages.map((src, idx) => (
               <div 
@@ -307,7 +309,7 @@ const ActivityItem: React.FC<{ i: number }> = ({ i }) => {
                   selectedImage === src ? 'border-stone-400 shadow-md scale-100' : 'border-transparent opacity-60 hover:opacity-100 scale-95 hover:scale-100 hover:shadow-sm'
                 }`}
               >
-                <img src={src} className="w-full h-full object-cover" alt={`Detail Thumb ${idx}`} referrerPolicy="no-referrer" />
+                <img src={src} className="w-full h-full object-cover" alt={`Detail Thumb ${idx}`} loading="lazy" decoding="async" referrerPolicy="no-referrer" />
               </div>
             ))}
           </div>
@@ -356,7 +358,7 @@ const ActivityItem: React.FC<{ i: number }> = ({ i }) => {
                 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&q=80&w=100'
               ].map((p, idx) => (
                 <div key={idx} className="w-12 h-12 rounded-full border-4 border-white overflow-hidden bg-stone-200">
-                  <img src={p} className="w-full h-full object-cover" alt="Editor" referrerPolicy="no-referrer" />
+                  <img src={p} className="w-full h-full object-cover" alt="Editor" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
                 </div>
               ))}
               <div className="w-12 h-12 rounded-full border-4 border-white bg-stone-100 flex items-center justify-center text-[10px] font-black text-stone-400">
@@ -571,7 +573,7 @@ export const Community: React.FC<CommunityProps> = ({ onNavigate }) => {
 
             <div onClick={() => onNavigate('profile')} className="relative aspect-square rounded-[3.5rem] bg-stone-900 p-10 flex flex-col justify-end overflow-hidden group cursor-pointer border border-stone-800">
               <div className="absolute inset-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-stone-700 via-stone-900 to-black opacity-80 group-hover:opacity-100 transition-opacity"></div>
-              <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800" className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-30 group-hover:scale-110 group-hover:opacity-40 transition-all duration-700" alt="Assets" referrerPolicy="no-referrer" />
+              <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800" className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-30 group-hover:scale-110 group-hover:opacity-40 transition-all duration-700" alt="Assets" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
               
               <div className="relative z-10">
                 <div className="text-neon text-[10px] font-black uppercase tracking-widest mb-2 shadow-sm drop-shadow-md">专属空间</div>
@@ -594,9 +596,11 @@ export const Community: React.FC<CommunityProps> = ({ onNavigate }) => {
               {communityImages.map((img) => (
                 <div key={img.id} className="group relative aspect-square rounded-[2rem] overflow-hidden bg-stone-50 border border-stone-100">
                   <img
-                    src={img.url.startsWith('http') ? img.url : `http://localhost:3001${img.url}`}
+                    src={resolveAssetUrl(img.url)}
                     className="w-full h-full object-cover"
                     alt={img.prompt}
+                    loading="lazy"
+                    decoding="async"
                     referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end">

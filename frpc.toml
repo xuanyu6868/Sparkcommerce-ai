@@ -1,0 +1,20 @@
+# ============================================
+# SparkCommerce frp 客户端配置
+# 在 Mac 上运行: frpc -c frpc.toml
+# ============================================
+
+# 通过本机 SSH 隧道连接阿里云 frps:
+# ssh -N -L 127.0.0.1:17000:127.0.0.1:7000 root@8.135.43.78
+serverAddr = "127.0.0.1"
+serverPort = 17000
+
+auth.method = "token"
+auth.token = "3fda4567e4ed6b5d7dd68e5685a61fa06a4b3ef1d09e00d1"
+
+# Web 流量转发（把 hmiai.cc 的请求转发到本地 3001）
+[[proxies]]
+name = "sparkcommerce-web"
+type = "http"
+localIP = "127.0.0.1"
+localPort = 3001
+customDomains = ["hmiai.cc", "www.hmiai.cc"]

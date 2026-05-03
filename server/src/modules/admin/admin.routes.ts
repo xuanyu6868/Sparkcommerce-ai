@@ -9,16 +9,25 @@ const router = Router();
 // 所有管理员路由需要登录 + 管理员权限
 router.use(authMiddleware, adminMiddleware);
 
-// 生成卡密
+// ---------------------------------------------------------------------------
+// 生成卡密（支持指定 targetUserId 发放给特定用户）
+// ---------------------------------------------------------------------------
 router.post('/keys/generate', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { count = 1, credits, plan } = req.body;
+    const { count = 1, credits, plan, targetUserId } = req.body;
 
     if (!credits || credits <= 0) {
       throw createError('积分数量必须大于0', 400);
     }
     if (!plan) {
       throw createError('请指定套餐类型', 400);
+    }
+
+    if (targetUserId) {
+      const targetUser = await prisma.user.findUnique({ where: { id: targetUserId } });
+      if (!targetUser) {
+        throw createError('目标用户不存在', 404);
+      }
     }
 
     const keys = [];
@@ -30,6 +39,7 @@ router.post('/keys/generate', async (req: Request, res: Response, next: NextFunc
           credits,
           plan,
           createdBy: req.user!.userId,
+          targetUserId: targetUserId || null,
         }
       });
       keys.push(key);
@@ -41,7 +51,9 @@ router.post('/keys/generate', async (req: Request, res: Response, next: NextFunc
   }
 });
 
-// 获取所有卡密列表
+// ---------------------------------------------------------------------------
+// 获取所有卡密列表（附带 targetUser 信息）
+// ---------------------------------------------------------------------------
 router.get('/keys', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { used, page = 1, limit = 50 } = req.query;
@@ -58,8 +70,22 @@ router.get('/keys', async (req: Request, res: Response, next: NextFunction) => {
       take: Number(limit),
     });
 
+    const targetUserIds = keys.filter(k => k.targetUserId).map(k => k.targetUserId!);
+    const users = targetUserIds.length > 0
+      ? await prisma.user.findMany({
+          where: { id: { in: targetUserIds } },
+          select: { id: true, email: true, name: true }
+        })
+      : [];
+    const userMap = new Map(users.map(u => [u.id, u]));
+
+    const keysWithUser = keys.map(k => ({
+      ...k,
+      targetUser: k.targetUserId ? (userMap.get(k.targetUserId) || null) : null,
+    }));
+
     res.json({
-      keys,
+      keys: keysWithUser,
       pagination: { page: Number(page), limit: Number(limit), total, totalPages: Math.ceil(total / Number(limit)) }
     });
   } catch (err) {
@@ -67,7 +93,9 @@ router.get('/keys', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-// 获取待处理订单（已支付未发卡密）
+// ---------------------------------------------------------------------------
+// 获取待处理订单
+// ---------------------------------------------------------------------------
 router.get('/orders/pending', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const orders = await prisma.order.findMany({
@@ -76,14 +104,15 @@ router.get('/orders/pending', async (req: Request, res: Response, next: NextFunc
       take: 50,
     });
 
-    // 检查哪些订单还没有对应的 redeem key（简化：返回已支付订单）
     res.json({ orders });
   } catch (err) {
     next(err);
   }
 });
 
-// 获取用户列表
+// ---------------------------------------------------------------------------
+// 获取用户列表（附带购买次数 / 兑换次数）
+// ---------------------------------------------------------------------------
 router.get('/users', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page = 1, limit = 50 } = req.query;
@@ -104,8 +133,53 @@ router.get('/users', async (req: Request, res: Response, next: NextFunction) => 
       }
     });
 
+    const userIds = users.map(u => u.id);
+
+    const orderCounts = await prisma.order.groupBy({
+      by: ['userId'],
+      where: { userId: { in: userIds } },
+      _count: { id: true },
+    });
+    const orderCountMap = new Map(orderCounts.map(o => [o.userId, o._count.id]));
+
+    const redeemCounts = await prisma.redeemKey.groupBy({
+      by: ['usedBy'],
+      where: { usedBy: { in: userIds }, used: true },
+      _count: { id: true },
+    });
+    const redeemCountMap = new Map(redeemCounts.map(r => [r.usedBy, r._count.id]));
+
+    const usersWithStats = users.map(u => ({
+      ...u,
+      orderCount: orderCountMap.get(u.id) || 0,
+      redeemCount: redeemCountMap.get(u.id) || 0,
+    }));
+
     res.json({
-      users,
+      users: usersWithStats,
+      pagination: { page: Number(page), limit: Number(limit), total, totalPages: Math.ceil(total / Number(limit)) }
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 获取购买日志
+// ---------------------------------------------------------------------------
+router.get('/purchase-logs', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page = 1, limit = 50 } = req.query;
+
+    const total = await prisma.orderLog.count();
+    const logs = await prisma.orderLog.findMany({
+      orderBy: { createdAt: 'desc' },
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
+    });
+
+    res.json({
+      logs,
       pagination: { page: Number(page), limit: Number(limit), total, totalPages: Math.ceil(total / Number(limit)) }
     });
   } catch (err) {

@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 app.use('/api', routes);
 
 // 静态文件（本地存储的图片）
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(process.cwd(), 'server', 'uploads')));
 
 // 前端静态文件（生产环境从 client/dist 提供）
 const clientDistDir = path.join(__dirname, '../../client/dist');

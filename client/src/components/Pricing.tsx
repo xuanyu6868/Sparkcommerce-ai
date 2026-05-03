@@ -102,7 +102,7 @@ const PricingCard: React.FC<PricingCardProps> = ({ plan, isPopular, onPurchase, 
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       whileHover={{ y: -10 }}
-      className={`relative p-10 rounded-[3rem] flex flex-col justify-between transition-all duration-500 overflow-hidden cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-stone-200/50 ${isPopular ? 'bg-black text-white' : 'bg-stone-50 border border-stone-100'}`}
+      className={`relative p-6 sm:p-10 rounded-[2rem] sm:rounded-[3rem] flex flex-col justify-between transition-all duration-500 overflow-hidden cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-stone-200/50 ${isPopular ? 'bg-black text-white' : 'bg-stone-50 border border-stone-100'}`}
     >
       {!isPopular && <ParticleLayer isHovered={isHovered} />}
 
@@ -134,7 +134,7 @@ const PricingCard: React.FC<PricingCardProps> = ({ plan, isPopular, onPurchase, 
         <div className="mb-10">
           <AnimatedWord
             text={`¥${plan.price}`}
-            className={`text-7xl font-impact tracking-tighter transition-colors duration-500 ${isHovered || isPopular ? 'text-white' : 'text-stone-900'}`}
+            className={`text-5xl sm:text-7xl font-impact tracking-tighter transition-colors duration-500 ${isHovered || isPopular ? 'text-white' : 'text-stone-900'}`}
           />
           <span className={`ml-2 font-medium ${isHovered ? 'text-stone-500' : (isPopular ? 'text-white/30' : 'text-stone-400')}`}>
             / {plan.credits} 积分
@@ -224,16 +224,16 @@ export const Pricing: React.FC<PricingProps> = ({ user, onCreditsUpdate }) => {
   };
 
   return (
-    <div className="pt-32 min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-6 pb-20">
-        <div className="text-center max-w-2xl mx-auto mb-20 select-none">
+    <div className="pt-28 sm:pt-32 min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-20">
+        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-20 select-none">
           <motion.h1
-            className="text-6xl md:text-8xl font-impact mb-6 tracking-tighter text-stone-900 leading-tight uppercase"
+            className="text-5xl sm:text-6xl md:text-8xl font-impact mb-6 tracking-tighter text-stone-900 leading-tight uppercase"
           >
             <AnimatedWord text="选择你的" className="block italic" />
             <AnimatedWord text="积分套餐" className="block text-neon -rotate-1" />
           </motion.h1>
-          <p className="text-stone-500 text-xl font-medium">
+          <p className="text-stone-500 text-base sm:text-xl font-medium">
             为不同规模的卖家量身定制，让 AI 视觉资产助力您的生意增长。
           </p>
         </div>
@@ -244,7 +244,7 @@ export const Pricing: React.FC<PricingProps> = ({ user, onCreditsUpdate }) => {
           </div>
         ) : (
           <>
-            <div className="grid md:grid-cols-3 gap-10">
+            <div className="grid md:grid-cols-3 gap-6 sm:gap-10">
               {plans.map((plan) => (
                 <PricingCard
                   key={plan.id}

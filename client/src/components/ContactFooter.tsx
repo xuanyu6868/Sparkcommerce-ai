@@ -209,6 +209,8 @@ export const ContactFooter: React.FC = () => {
                 src="/qr_code_v2.png"
                 alt="联系我们二维码"
                 className="absolute inset-0 w-full h-full object-contain p-1"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </motion.div>

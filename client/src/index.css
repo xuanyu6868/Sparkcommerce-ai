@@ -52,8 +52,12 @@
 }
 
 @layer base {
+  html {
+    overflow-x: hidden;
+  }
   body {
     @apply bg-white text-stone-900 antialiased selection:bg-neon selection:text-black;
+    overflow-x: hidden;
   }
   .text-outline {
     -webkit-text-stroke: 2px var(--color-neon);
@@ -153,6 +157,15 @@
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #d6d3d1;
   border-radius: 3px;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 .animated-button {

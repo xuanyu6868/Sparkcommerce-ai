@@ -17,7 +17,7 @@ import {
   CheckCircle2,
   Loader2
 } from 'lucide-react';
-import { userApi, imageApi } from '../services/api';
+import { userApi, imageApi, resolveAssetUrl } from '../services/api';
 
 interface ProfileProps {
   onNavigate: (view: 'home' | 'studio' | 'discover' | 'community' | 'pricing' | 'profile') => void;
@@ -59,7 +59,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
     imageApi.list(1, 50).then(({ images }) => {
       setCreations(images.map((img: any) => ({
         id: img.id,
-        url: img.url.startsWith('http') ? img.url : `http://localhost:3001${img.url}`,
+        url: resolveAssetUrl(img.url),
         title: img.prompt?.substring(0, 20) || 'AI生成',
         engine: img.engineStyle || 'AI_ENGINE',
         ratio: img.aspectRatio || '1:1',
@@ -131,32 +131,32 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
     : creations.filter(c => c.style?.includes(filter));
 
   return (
-    <div className="pt-32 min-h-screen bg-white relative">
+    <div className="pt-32 sm:pt-32 min-h-screen bg-white relative">
       {/* Detail Modal Overlay */}
       {selectedCreation && (
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-6 md:p-12 lg:p-24"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 md:p-12 lg:p-24"
         >
           <div className="absolute inset-0 bg-stone-900/90 backdrop-blur-3xl" onClick={() => setSelectedCreation(null)} />
           <motion.div 
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
-            className="bg-white w-full max-w-6xl rounded-[4rem] overflow-hidden shadow-2xl relative z-10 flex flex-col md:flex-row h-full max-h-[85vh]"
+            className="bg-white w-full max-w-6xl rounded-[2rem] sm:rounded-[4rem] overflow-hidden shadow-2xl relative z-10 flex flex-col md:flex-row h-full max-h-[85vh]"
           >
             <div className="flex-1 bg-stone-100 relative group overflow-hidden">
-              <img src={selectedCreation.url} className="w-full h-full object-cover transition-transform duration-[10s] hover:scale-110" alt="Preview" referrerPolicy="no-referrer" />
+              <img src={selectedCreation.url} className="w-full h-full object-cover transition-transform duration-[10s] hover:scale-110" alt="Preview" decoding="async" referrerPolicy="no-referrer" />
               <div className="absolute top-8 left-8">
                 <div className="px-4 py-2 bg-black/40 backdrop-blur rounded-full text-white text-[10px] font-black uppercase tracking-widest border border-white/10">
                   {selectedCreation.engine}
                 </div>
               </div>
             </div>
-            <div className="w-full md:w-[400px] p-12 overflow-y-auto flex flex-col justify-between border-l border-stone-100">
+            <div className="w-full md:w-[400px] p-6 sm:p-12 overflow-y-auto flex flex-col justify-between border-l border-stone-100">
               <div>
                 <div className="text-neon text-[10px] font-black uppercase tracking-[0.4em] mb-4">元数据解析</div>
-                <h2 className="text-4xl font-impact uppercase italic italic mb-8">{selectedCreation.title}</h2>
+                <h2 className="text-3xl sm:text-4xl font-impact uppercase italic italic mb-8">{selectedCreation.title}</h2>
                 
                 <div className="space-y-6">
                   <div>
@@ -196,20 +196,22 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
         </motion.div>
       )}
 
-      <div className="max-w-7xl mx-auto px-6 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-20">
         
         {/* Profile Header */}
-        <div className="flex flex-col md:flex-row items-start gap-12 mb-20">
+        <div className="flex flex-col md:flex-row items-start gap-8 sm:gap-12 mb-14 sm:mb-20">
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             className="relative group cursor-pointer"
           >
-            <div className="w-56 h-56 rounded-[4rem] overflow-hidden border-8 border-white shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] relative">
+            <div className="w-36 h-36 sm:w-56 sm:h-56 rounded-[2.5rem] sm:rounded-[4rem] overflow-hidden border-8 border-white shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] relative">
               <img 
                 src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=500" 
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                 alt="Avatar"
+                loading="lazy"
+                decoding="async"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -259,7 +261,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
                   </motion.div>
                 ) : (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                    <h1 className="text-7xl font-impact tracking-tight uppercase italic mb-3 leading-tight text-stone-900">{username}</h1>
+                <h1 className="text-5xl sm:text-7xl font-impact tracking-tight uppercase italic mb-3 leading-tight text-stone-900 break-words">{username}</h1>
                     <p className="text-stone-400 font-medium text-xl flex items-center gap-3">
                       {bio}
                       <span className="w-2 h-2 bg-neon rounded-full animate-pulse" />
@@ -268,7 +270,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
                 )}
               </div>
               <div className="flex gap-4">
-                <button className="px-10 py-5 bg-stone-50 border-2 border-stone-100 rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] hover:bg-stone-900 hover:text-white hover:border-stone-900 transition-all shadow-sm">
+                <button className="w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-stone-50 border-2 border-stone-100 rounded-[1.5rem] sm:rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] hover:bg-stone-900 hover:text-white hover:border-stone-900 transition-all shadow-sm">
                   <Share2 className="w-4 h-4 inline-block mr-3" />
                   分享
                 </button>
@@ -309,13 +311,13 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
         </div>
 
         {/* Tabs & Content */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-stone-100 mb-12">
-          <div className="flex items-center gap-12">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 sm:gap-8 border-b border-stone-100 mb-10 sm:mb-12">
+          <div className="flex items-center gap-8 sm:gap-12 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {['项目库', '品牌资产', '操作记录', '订阅服务'].map((tab) => (
               <button 
                 key={tab} 
                 onClick={() => setActiveTab(tab)}
-                className={`pb-6 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === tab ? 'text-stone-900' : 'text-stone-300 hover:text-stone-500'}`}
+                className={`pb-5 sm:pb-6 text-sm font-black uppercase tracking-widest whitespace-nowrap transition-all relative ${activeTab === tab ? 'text-stone-900' : 'text-stone-300 hover:text-stone-500'}`}
               >
                 {tab}
                 {activeTab === tab && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-1 bg-neon" />}
@@ -324,7 +326,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
           </div>
 
           {activeTab === '项目库' && (
-            <div className="flex items-center gap-4 pb-6 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-3 sm:gap-4 pb-6 overflow-x-auto no-scrollbar">
               {['所有类目', '数码产品', '美妆个护', '家居设计', '时尚鞋履'].map((f) => (
                 <button 
                   key={f}
@@ -340,12 +342,12 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
 
         {activeTab === '项目库' && (creationsLoading
           ? <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-stone-400" /></div>
-          : <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+          : <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-10">
             {/* Create New Trigger */}
             <motion.button 
               whileHover={{ scale: 1.02 }}
               onClick={() => onNavigate('studio')}
-              className="aspect-[3/4] rounded-[3rem] border-4 border-dashed border-stone-100 flex flex-col items-center justify-center gap-6 group hover:border-black hover:bg-stone-50 transition-all h-full"
+              className="aspect-[3/4] rounded-[2rem] sm:rounded-[3rem] border-4 border-dashed border-stone-100 flex flex-col items-center justify-center gap-6 group hover:border-black hover:bg-stone-50 transition-all h-full"
             >
               <div className="w-20 h-20 rounded-[2rem] bg-stone-50 flex items-center justify-center group-hover:bg-neon group-hover:rotate-12 transition-all duration-500 shadow-sm border border-stone-100">
                 <PlusCircle className="w-10 h-10 text-stone-300 group-hover:text-black" />
@@ -363,9 +365,9 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.05 }}
                 onClick={() => setSelectedCreation(img)}
-                className="group relative aspect-[3/4] rounded-[3rem] overflow-hidden bg-stone-100 flex flex-col shadow-xl cursor-pointer"
+                className="group relative aspect-[3/4] rounded-[2rem] sm:rounded-[3rem] overflow-hidden bg-stone-100 flex flex-col shadow-xl cursor-pointer"
               >
-                <img src={img.url} className="w-full h-full object-cover transition-transform duration-[4s] group-hover:scale-110" referrerPolicy="no-referrer" />
+                <img src={img.url} className="w-full h-full object-cover transition-transform duration-[4s] group-hover:scale-110" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
                 
                 {/* Image Overlay Info */}
                 <div className="absolute inset-0 bg-stone-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
@@ -457,7 +459,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
                     animate={{ opacity: 1, y: 0 }}
                     className="group relative aspect-video rounded-[2.5rem] overflow-hidden bg-stone-100 flex flex-col shadow-xl cursor-pointer"
                   >
-                    <img src={img.url} className="w-full h-full object-cover transition-transform duration-[4s] group-hover:scale-110" referrerPolicy="no-referrer" />
+                    <img src={img.url} className="w-full h-full object-cover transition-transform duration-[4s] group-hover:scale-110" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
                     <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
                       <h4 className="text-white font-impact text-lg uppercase leading-tight">{img.title}</h4>
                       <span className="text-[9px] text-neon font-black tracking-widest uppercase">最近作品</span>
@@ -474,13 +476,13 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="p-12 bg-stone-900 rounded-[4rem] text-white overflow-hidden relative group cursor-pointer"
+              className="p-8 sm:p-12 bg-stone-900 rounded-[2rem] sm:rounded-[4rem] text-white overflow-hidden relative group cursor-pointer"
             >
               <div className="relative z-10">
                 <div className="w-16 h-16 bg-neon text-black rounded-3xl flex items-center justify-center mb-8 shadow-2xl">
                   <CreditCard className="w-8 h-8" />
                 </div>
-                <h3 className="text-5xl font-impact uppercase italic tracking-tight mb-4 leading-tight">升级至专业版</h3>
+                <h3 className="text-4xl sm:text-5xl font-impact uppercase italic tracking-tight mb-4 leading-tight">升级至专业版</h3>
                 <p className="text-stone-400 font-medium mb-12 text-lg max-w-md">解锁 4K 原图导出、无限云存储空间、以及 AI 优先队列渲染权，让你的创作效率翻倍。</p>
                 <button className="px-12 py-5 bg-neon text-black rounded-[2rem] font-black uppercase text-sm tracking-widest hover:bg-white hover:scale-105 transition-all shadow-glow flex items-center gap-3">
                   立即升级计划
@@ -493,7 +495,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="p-12 bg-stone-50 border border-stone-100 rounded-[4rem] flex flex-col justify-between shadow-sm relative overflow-hidden"
+              className="p-8 sm:p-12 bg-stone-50 border border-stone-100 rounded-[2rem] sm:rounded-[4rem] flex flex-col justify-between shadow-sm relative overflow-hidden"
             >
               <div>
                 <div className="flex items-center gap-4 mb-10">
@@ -646,4 +648,3 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate, onLogout, onCredit
     </div>
   );
 };
-

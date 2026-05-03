@@ -58,6 +58,8 @@ export const ImageGrid: React.FC<ImageGridProps> = ({ images, onImageClick }) =>
                 alt={image.prompt}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 style={{ imageRendering: '-webkit-optimize-contrast', WebkitBackfaceVisibility: 'hidden', transform: 'translateZ(0)' }}
+                loading="lazy"
+                decoding="async"
                 referrerPolicy="no-referrer"
               />
             )}
