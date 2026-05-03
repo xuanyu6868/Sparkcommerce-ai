@@ -7,6 +7,7 @@ export interface AIConfig {
   baseUrl: string;
   model: string;
   quality: string;
+  timeoutMs: number;
 }
 
 function getRequiredEnv(key: string, fallback?: string): string {
@@ -24,12 +25,19 @@ export const aiConfig: AIConfig = {
   apiKey: getRequiredEnv('AI_API_KEY'),
   baseUrl: process.env.AI_API_HOST || 'https://lingsuan.nmyh.cc',
   model: process.env.AI_MODEL || 'gpt-image-2',
-  quality: process.env.AI_QUALITY || 'high',
+  // 默认改为 medium，显著降低单次生成耗时
+  quality: process.env.AI_QUALITY || 'medium',
+  timeoutMs: Number(process.env.AI_REQUEST_TIMEOUT_MS || 180000),
 };
+
+function normalizeBaseUrl(url: string): string {
+  const trimmed = url.replace(/\/+$/, '');
+  return trimmed.endsWith('/v1') ? trimmed.slice(0, -3) : trimmed;
+}
 
 export function isAiConfigured(): boolean {
   return aiConfig.apiKey.length > 0;
 }
 
 // 图片生成 API 端点
-export const IMAGE_API_ENDPOINT = `${aiConfig.baseUrl}/v1/images/generations`;
+export const IMAGE_API_ENDPOINT = `${normalizeBaseUrl(aiConfig.baseUrl)}/v1/images/generations`;

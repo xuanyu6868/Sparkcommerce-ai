@@ -17,6 +17,10 @@ export default defineConfig(({mode}) => {
     },
     server: {
       allowedHosts: ['lhr.life', '.lhr.life', 'localhost', '.loca.lt'],
+      proxy: {
+        '/api': 'http://localhost:3001',
+        '/uploads': 'http://localhost:3001',
+      },
       hmr: process.env.DISABLE_HMR !== 'true',
     },
   };

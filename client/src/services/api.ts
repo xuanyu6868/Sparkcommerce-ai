@@ -3,7 +3,11 @@
  * 接入后端 Express + Prisma API
  */
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = (() => {
+  const envBase = (import.meta as any)?.env?.VITE_API_BASE as string | undefined;
+  if (envBase && envBase.trim()) return envBase.trim().replace(/\/+$/, '');
+  return '/api';
+})();
 
 // ============ 类型定义 ============
 

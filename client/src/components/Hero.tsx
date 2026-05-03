@@ -38,6 +38,7 @@ interface HeroProps {
     mainImageStyle: string;
     detailStyle: string;
     commerceStyle: string;
+    isMainImage: boolean;
   }) => void;
   isGenerating: boolean;
   credits: number;
@@ -248,6 +249,7 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
   const [mainImageStyle, setMainImageStyle] = useState("none");
   const [detailImageStyle, setDetailImageStyle] = useState("none");
   const [commerceStyle, setCommerceStyle] = useState("none");
+  const [isMainImage, setIsMainImage] = useState(true);
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
@@ -263,6 +265,7 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
         mainImageStyle,
         detailStyle: detailImageStyle,
         commerceStyle,
+        isMainImage,
       });
     }
   };
@@ -337,6 +340,22 @@ export const Hero: React.FC<HeroProps> = ({ onGenerate, isGenerating, credits, o
                     清空
                   </button>
                 )}
+                <div className="flex items-center gap-1 bg-stone-100 rounded-full p-1">
+                  <button
+                    type="button"
+                    onClick={() => setIsMainImage(true)}
+                    className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all ${isMainImage ? 'bg-stone-900 text-neon' : 'text-stone-400'}`}
+                  >
+                    主图
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsMainImage(false)}
+                    className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all ${!isMainImage ? 'bg-stone-900 text-neon' : 'text-stone-400'}`}
+                  >
+                    详情图
+                  </button>
+                </div>
                 <button
                   disabled={isGenerating || !prompt.trim() || credits < 5}
                   className="bg-stone-900 text-white px-12 py-5 rounded-[2rem] font-black text-lg hover:bg-neon hover:text-black hover:shadow-[0_0_30px_rgba(0,255,0,0.4)] disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center gap-3 shadow-2xl shadow-stone-200 active:scale-95 duration-300"

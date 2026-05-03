@@ -144,6 +144,7 @@ export default function App() {
     mainImageStyle: string;
     detailStyle: string;
     commerceStyle: string;
+    isMainImage: boolean;
   }) => {
     if (!isAuthenticated) {
       handleNavigate('auth');
@@ -165,6 +166,7 @@ export default function App() {
         mainImageStyle: styleParams.mainImageStyle,
         detailStyle: styleParams.detailStyle,
         commerceStyle: styleParams.commerceStyle,
+        isMainImage: styleParams.isMainImage,
       });
 
       // 更新剩余积分

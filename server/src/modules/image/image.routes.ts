@@ -48,7 +48,7 @@ router.post('/generate', authMiddleware, async (req: Request, res: Response, nex
     });
 
     console.log('[Prompt Engine]', {
-      matchedStyles: assembled.matchedStyleNames,
+      matchedStyle: assembled.matchedStyleName,
       triggeredKeywords: assembled.triggeredKeywords,
       finalPrompt: assembled.finalPrompt.substring(0, 100) + '...'
     });
@@ -79,7 +79,7 @@ router.post('/generate', authMiddleware, async (req: Request, res: Response, nex
         mainImageStyle: mainImageStyle !== 'none' ? mainImageStyle : null,
         detailStyle: detailStyle !== 'none' ? detailStyle : null,
         commerceStyle: commerceStyle !== 'none' ? commerceStyle : null,
-        matchedStyles: JSON.stringify(assembled.matchedStyles),
+        matchedStyles: JSON.stringify([assembled.matchedStyle]),
         triggeredKeywords: JSON.stringify(assembled.triggeredKeywords),
         width: dimensions.width,
         height: dimensions.height,
@@ -289,53 +289,74 @@ async function callMiniMaxAPI(
   prompt: string,
   aspectRatio: string
 ): Promise<string> {
-  const body: Record<string, any> = {
-    model: 'gpt-image-2',
-    prompt: prompt,
-    n: 1,
-    size: aspectRatioToSize(aspectRatio),
-    quality: aiConfig.quality,
-    output_format: 'png',
-  };
+  const size = aspectRatioToSize(aspectRatio);
+  const tryQualities = [aiConfig.quality, 'low'].filter((q, i, arr) => arr.indexOf(q) === i);
+  let lastError: unknown = null;
 
-  // 显式指定 response_format 以便优先使用 b64_json
-  body.response_format = 'b64_json';
+  for (const quality of tryQualities) {
+    try {
+      const body: Record<string, any> = {
+        model: aiConfig.model,
+        prompt: prompt,
+        n: 1,
+        size,
+        quality,
+        output_format: 'png',
+      };
 
-  const response = await fetch(IMAGE_API_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${aiConfig.apiKey}`
-    },
-    body: JSON.stringify(body)
-  });
+      // 部分 OpenAI 兼容网关不支持该字段，默认由服务端决定返回格式
+      if (aiConfig.baseUrl.includes('api.openai.com')) {
+        body.response_format = 'b64_json';
+      }
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`图片生成 API 请求失败: ${response.status} - ${errorText}`);
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), aiConfig.timeoutMs);
+      const response = await fetch(IMAGE_API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${aiConfig.apiKey}`
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      }).finally(() => clearTimeout(timer));
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`图片生成 API 请求失败: ${response.status} - ${errorText}`);
+      }
+
+      const data: ImageGenerationResponse = await response.json();
+
+      if (!data.data || data.data.length === 0) {
+        throw new Error('AI 未返回图片');
+      }
+
+      const item = data.data[0];
+      let localPath: string;
+
+      if (item.b64_json) {
+        localPath = await saveImageLocally(`data:image/png;base64,${item.b64_json}`, 'png');
+        console.log(`[Image saved from base64] ${localPath}`);
+      } else if (item.url) {
+        localPath = await downloadAndSaveImage(item.url);
+        console.log(`[Image saved from URL] ${localPath}`);
+      } else {
+        throw new Error('AI 未返回图片数据');
+      }
+
+      return localPath;
+    } catch (err: any) {
+      lastError = err;
+      const msg = String(err?.message || err || '');
+      console.warn(`[AI retry] quality=${quality} failed: ${msg}`);
+      if (!msg.includes('AbortError') && !msg.includes('timeout') && !msg.includes('5')) {
+        break;
+      }
+    }
   }
 
-  const data: ImageGenerationResponse = await response.json();
-
-  if (!data.data || data.data.length === 0) {
-    throw new Error('AI 未返回图片');
-  }
-
-  const item = data.data[0];
-  let localPath: string;
-
-  // GPT image-1 默认返回 b64_json
-  if (item.b64_json) {
-    localPath = await saveImageLocally(`data:image/png;base64,${item.b64_json}`, 'png');
-    console.log(`[Image saved from base64] ${localPath}`);
-  } else if (item.url) {
-    localPath = await downloadAndSaveImage(item.url);
-    console.log(`[Image saved from URL] ${localPath}`);
-  } else {
-    throw new Error('AI 未返回图片数据');
-  }
-
-  return localPath;
+  throw lastError instanceof Error ? lastError : new Error('图片生成失败');
 }
 
 function aspectRatioToSize(ratio: string): string {
