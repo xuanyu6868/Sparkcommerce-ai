@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+*.db
+uploads/*
+!uploads/.gitkeep
+public/assets/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

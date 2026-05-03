@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// 用户相关
+// ============================================
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  name          String?
+  avatar        String?
+  bio           String?
+  role          String   @default("USER")  // USER | ADMIN
+  tier          String   @default("FREE")   // FREE | PRO | ENTERPRISE
+  credits       Int      @default(0)
+  totalCredits  Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // 关联
+  images        Image[]
+  likes         Like[]
+  orders        Order[]
+
+  @@map("users")
+}
+
+// ============================================
+// 图片相关
+// ============================================
+
+model Image {
+  id              String   @id @default(cuid())
+  url             String
+  prompt          String
+  assembledPrompt String?
+  aspectRatio     String   @default("1:1")
+  engineStyle     String?
+  mainImageStyle  String?
+  detailStyle     String?
+  commerceStyle   String?
+  matchedStyles   String   @default("[]")   // JSON string array
+  triggeredKeywords String @default("[]")   // JSON string array
+  width           Int?
+  height          Int?
+  isPublic        Boolean  @default(true)
+  isFavorite      Boolean  @default(false)
+  viewCount       Int      @default(0)
+  likeCount       Int      @default(0)
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // 关联
+  likes           Like[]
+
+  @@map("images")
+}
+
+// ============================================
+// 点赞相关
+// ============================================
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  imageId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  image     Image    @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, imageId])
+  @@map("likes")
+}
+
+// ============================================
+// 订单相关
+// ============================================
+
+model Order {
+  id            String   @id @default(cuid())
+  orderNo       String   @unique
+  plan          String
+  amount        Int
+  credits       Int
+  status        String   @default("PENDING")  // PENDING | COMPLETED | FAILED | REFUNDED
+  paidAt        DateTime?
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("orders")
+}
+
+// ============================================
+// 卡密相关
+// ============================================
+
+model RedeemKey {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  credits     Int
+  plan        String?
+  used        Boolean  @default(false)
+  usedBy      String?
+  usedAt      DateTime?
+  createdBy   String?
+  createdAt   DateTime @default(now())
+
+  @@map("redeem_keys")
+}
