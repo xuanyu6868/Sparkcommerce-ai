@@ -1,9 +1,0 @@
-[OSS] 缺少环境变量 OSS_ACCESS_KEY_ID，图片将保存到本地
-[OSS] 缺少环境变量 OSS_ACCESS_KEY_SECRET，图片将保存到本地
-
-╔═══════════════════════════════════════════════╗
-║   SparkCommerce Backend Started              ║
-║   http://localhost:3001                     ║
-╚═══════════════════════════════════════════════╝
-  
-[2026-05-03T10:00:41.671Z] GET /api/health

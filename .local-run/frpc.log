@@ -1,5 +1,0 @@
-[1;34m2026-05-03 18:02:54.781 [I] [sub/root.go:201] start frpc service for config file [frpc.toml] with aggregated configuration
-[0m[1;34m2026-05-03 18:02:54.781 [I] [client/service.go:378] try to connect to server...
-[0m[1;33m2026-05-03 18:02:59.784 [W] [client/service.go:381] connect to server error: session shutdown
-[0m[1;34m2026-05-03 18:02:59.784 [I] [sub/root.go:218] frpc service for config file [frpc.toml] stopped
-[0mlogin to the server failed: session shutdown. With loginFailExit enabled, no additional retries will be attempted
