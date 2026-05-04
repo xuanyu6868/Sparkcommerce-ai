@@ -10,14 +10,14 @@ import { ImageGrid, ImageItem } from './components/ImageGrid';
 import { authApi, userApi, imageApi, getToken, resolveAssetUrl } from './services/api';
 import { ContactFooter } from './components/ContactFooter';
 
-const LandingPage = React.lazy(() => import('./components/LandingPage'));
-const Community = React.lazy(() => import('./components/Community'));
-const Pricing = React.lazy(() => import('./components/Pricing'));
-const Profile = React.lazy(() => import('./components/Profile'));
-const AuthPage = React.lazy(() => import('./components/AuthPage'));
-const AdminPanel = React.lazy(() => import('./components/AdminPanel'));
-const ImageModal = React.lazy(() => import('./components/ImageModal'));
-const CompanyProfileTransition = React.lazy(() => import('./components/CompanyProfileTransition'));
+const LandingPage = React.lazy(() => import('./components/LandingPage').then(m => ({ default: m.LandingPage })));
+const Community = React.lazy(() => import('./components/Community').then(m => ({ default: m.Community })));
+const Pricing = React.lazy(() => import('./components/Pricing').then(m => ({ default: m.Pricing })));
+const Profile = React.lazy(() => import('./components/Profile').then(m => ({ default: m.Profile })));
+const AuthPage = React.lazy(() => import('./components/AuthPage').then(m => ({ default: m.AuthPage })));
+const AdminPanel = React.lazy(() => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel })));
+const ImageModal = React.lazy(() => import('./components/ImageModal').then(m => ({ default: m.ImageModal })));
+const CompanyProfileTransition = React.lazy(() => import('./components/CompanyProfileTransition').then(m => ({ default: m.CompanyProfileTransition })));
 
 function PageLoader() {
   return (
