@@ -307,4 +307,12 @@ export const adminApi = {
   async getPurchaseLogs(page = 1, limit = 50): Promise<{ logs: any[]; pagination: any }> {
     return request<{ logs: any[]; pagination: any }>(`/admin/purchase-logs?page=${page}&limit=${limit}`);
   },
+
+  async getImages(page = 1, limit = 50): Promise<{ images: any[]; pagination: any }> {
+    return request<{ images: any[]; pagination: any }>(`/admin/images?page=${page}&limit=${limit}`);
+  },
+
+  async getOrders(page = 1, limit = 50): Promise<{ orders: any[]; pagination: any }> {
+    return request<{ orders: any[]; pagination: any }>(`/admin/orders?page=${page}&limit=${limit}`);
+  },
 };

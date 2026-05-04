@@ -187,4 +187,56 @@ router.get('/purchase-logs', async (req: Request, res: Response, next: NextFunct
   }
 });
 
+// ---------------------------------------------------------------------------
+// 获取所有图片
+// ---------------------------------------------------------------------------
+router.get('/images', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page = 1, limit = 50 } = req.query;
+
+    const total = await prisma.image.count();
+    const images = await prisma.image.findMany({
+      orderBy: { createdAt: 'desc' },
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
+      include: {
+        user: { select: { id: true, email: true, name: true } }
+      }
+    });
+
+    res.json({
+      images,
+      pagination: { page: Number(page), limit: Number(limit), total, totalPages: Math.ceil(total / Number(limit)) }
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 获取所有订单
+// ---------------------------------------------------------------------------
+router.get('/orders', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page = 1, limit = 50 } = req.query;
+
+    const total = await prisma.order.count();
+    const orders = await prisma.order.findMany({
+      orderBy: { createdAt: 'desc' },
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
+      include: {
+        user: { select: { id: true, email: true, name: true } }
+      }
+    });
+
+    res.json({
+      orders,
+      pagination: { page: Number(page), limit: Number(limit), total, totalPages: Math.ceil(total / Number(limit)) }
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

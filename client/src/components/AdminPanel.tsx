@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
   Key, Users, Zap, Copy, Check, Loader2, RefreshCw,
-  ShoppingCart, UserPlus, Search,
+  ShoppingCart, UserPlus, Search, Image,
 } from 'lucide-react';
 import { adminApi } from '../services/api';
 
@@ -37,10 +37,12 @@ async function copyToClipboard(text: string): Promise<boolean> {
 }
 
 export const AdminPanel: React.FC = () => {
-  const [tab, setTab] = useState<'keys' | 'users' | 'logs'>('keys');
+  const [tab, setTab] = useState<'keys' | 'users' | 'logs' | 'images' | 'orders'>('keys');
   const [keys, setKeys] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
+  const [images, setImages] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [genCount, setGenCount] = useState(1);
@@ -65,9 +67,15 @@ export const AdminPanel: React.FC = () => {
       } else if (tab === 'users') {
         const { users: userList } = await adminApi.getUsers();
         setUsers(userList);
-      } else {
+      } else if (tab === 'logs') {
         const { logs: logList } = await adminApi.getPurchaseLogs();
         setLogs(logList);
+      } else if (tab === 'images') {
+        const { images: imageList } = await adminApi.getImages();
+        setImages(imageList);
+      } else if (tab === 'orders') {
+        const { orders: orderList } = await adminApi.getOrders();
+        setOrders(orderList);
       }
     } catch (err: any) {
       console.error(err);
@@ -146,7 +154,9 @@ export const AdminPanel: React.FC = () => {
         <div className="flex gap-3 sm:gap-4 mb-10 border-b border-stone-100 pb-4 overflow-x-auto sm:flex-wrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <TabButton id="keys" label="卡密管理" icon={<Key className="w-4 h-4" />} />
           <TabButton id="users" label="用户列表" icon={<Users className="w-4 h-4" />} />
-          <TabButton id="logs" label="购买日志" icon={<ShoppingCart className="w-4 h-4" />} />
+          <TabButton id="images" label="图片管理" icon={<Image className="w-4 h-4" />} />
+          <TabButton id="orders" label="订单管理" icon={<ShoppingCart className="w-4 h-4" />} />
+          <TabButton id="logs" label="购买日志" icon={<Zap className="w-4 h-4" />} />
         </div>
 
         {/* ================================================================ */}
@@ -379,7 +389,97 @@ export const AdminPanel: React.FC = () => {
         )}
 
         {/* ================================================================ */}
-        {/* 标签 3：购买日志                                                       */}
+        {/* 标签 3：图片管理                                                       */}
+        {/* ================================================================ */}
+        {tab === 'images' && (
+          <div>
+            {loading ? (
+              <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-stone-400" /></div>
+            ) : (
+              <div className="bg-stone-50 rounded-[2rem] border border-stone-100 overflow-x-auto">
+                <div className="min-w-[960px] grid grid-cols-12 gap-4 p-4 text-[10px] font-black uppercase tracking-widest text-stone-400 border-b border-stone-100">
+                  <div className="col-span-1">ID</div>
+                  <div className="col-span-2">用户</div>
+                  <div className="col-span-4">提示词</div>
+                  <div className="col-span-3">图片</div>
+                  <div className="col-span-2">创建时间</div>
+                </div>
+                {images.length === 0 ? (
+                  <div className="p-12 text-center text-stone-400 font-medium">暂无图片</div>
+                ) : (
+                  images.map((img: any) => (
+                    <div key={img.id} className="min-w-[960px] grid grid-cols-12 gap-4 p-4 border-b border-stone-50 text-sm items-center">
+                      <div className="col-span-1 text-xs text-stone-400 font-mono truncate">{img.id.slice(0, 8)}</div>
+                      <div className="col-span-2 text-xs truncate">{img.user?.name || img.user?.email || '-'}</div>
+                      <div className="col-span-4 text-xs text-stone-600 truncate">{img.prompt}</div>
+                      <div className="col-span-3">
+                        <a href={img.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline truncate block">
+                          {img.url.split('/').pop()}
+                        </a>
+                      </div>
+                      <div className="col-span-2 text-xs text-stone-400">
+                        {new Date(img.createdAt).toLocaleString('zh-CN')}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ================================================================ */}
+        {/* 标签 4：订单管理                                                       */}
+        {/* ================================================================ */}
+        {tab === 'orders' && (
+          <div>
+            {loading ? (
+              <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-stone-400" /></div>
+            ) : (
+              <div className="bg-stone-50 rounded-[2rem] border border-stone-100 overflow-x-auto">
+                <div className="min-w-[960px] grid grid-cols-12 gap-4 p-4 text-[10px] font-black uppercase tracking-widest text-stone-400 border-b border-stone-100">
+                  <div className="col-span-2">订单号</div>
+                  <div className="col-span-2">用户</div>
+                  <div className="col-span-2">套餐</div>
+                  <div className="col-span-1">金额</div>
+                  <div className="col-span-1">积分</div>
+                  <div className="col-span-2">状态</div>
+                  <div className="col-span-2">时间</div>
+                </div>
+                {orders.length === 0 ? (
+                  <div className="p-12 text-center text-stone-400 font-medium">暂无订单</div>
+                ) : (
+                  orders.map((o: any) => (
+                    <div key={o.id} className="min-w-[960px] grid grid-cols-12 gap-4 p-4 border-b border-stone-50 text-sm items-center">
+                      <div className="col-span-2 text-xs font-mono text-stone-500 truncate">{o.orderNo}</div>
+                      <div className="col-span-2 text-xs truncate">{o.user?.name || o.user?.email || '-'}</div>
+                      <div className="col-span-2">
+                        <span className="text-xs font-bold bg-stone-200 px-2 py-0.5 rounded">{o.plan}</span>
+                      </div>
+                      <div className="col-span-1 font-mono text-xs">¥{(o.amount / 100).toFixed(1)}</div>
+                      <div className="col-span-1 font-mono text-xs">{o.credits}</div>
+                      <div className="col-span-2">
+                        {o.status === 'COMPLETED' ? (
+                          <span className="text-xs text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded">已完成</span>
+                        ) : o.status === 'REFUNDED' ? (
+                          <span className="text-xs text-red-400 font-bold bg-red-50 px-2 py-0.5 rounded">已退款</span>
+                        ) : (
+                          <span className="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-0.5 rounded">待支付</span>
+                        )}
+                      </div>
+                      <div className="col-span-2 text-xs text-stone-400">
+                        {new Date(o.createdAt).toLocaleString('zh-CN')}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ================================================================ */}
+        {/* 标签 5：购买日志                                                       */}
         {/* ================================================================ */}
         {tab === 'logs' && (
           <div>
