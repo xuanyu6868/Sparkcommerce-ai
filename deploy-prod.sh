@@ -31,7 +31,7 @@ cd ..
 
 # 5. 安装图片优化工具
 echo -e "${GREEN}[5/8] 安装图片优化工具...${NC}"
-apt-get install -y webp 2>/dev/null || echo "webp 工具暂不可用，跳过图片优化"
+dnf install -y libwebp-tools 2>/dev/null || apt-get install -y webp 2>/dev/null || echo "webp 工具暂不可用，跳过图片优化"
 
 # 6. 构建项目 (含图片压缩)
 echo -e "${GREEN}[6/8] 构建项目...${NC}"
