@@ -48,7 +48,7 @@ router.post('/create', authMiddleware, async (req: Request, res: Response, next:
         orderNo,
         status: 'PENDING',
       }
-    }).catch((err) => {
+    }).catch((err: any) => {
       console.warn('[OrderLog] 写入失败:', err.message);
     });
 

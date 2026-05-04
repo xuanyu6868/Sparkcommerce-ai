@@ -70,16 +70,16 @@ router.get('/keys', async (req: Request, res: Response, next: NextFunction) => {
       take: Number(limit),
     });
 
-    const targetUserIds = keys.filter(k => k.targetUserId).map(k => k.targetUserId!);
+    const targetUserIds = keys.filter((k: any) => k.targetUserId).map((k: any) => k.targetUserId!);
     const users = targetUserIds.length > 0
       ? await prisma.user.findMany({
           where: { id: { in: targetUserIds } },
           select: { id: true, email: true, name: true }
         })
       : [];
-    const userMap = new Map(users.map(u => [u.id, u]));
+    const userMap = new Map(users.map((u: any) => [u.id, u]));
 
-    const keysWithUser = keys.map(k => ({
+    const keysWithUser = keys.map((k: any) => ({
       ...k,
       targetUser: k.targetUserId ? (userMap.get(k.targetUserId) || null) : null,
     }));
@@ -133,23 +133,23 @@ router.get('/users', async (req: Request, res: Response, next: NextFunction) => 
       }
     });
 
-    const userIds = users.map(u => u.id);
+    const userIds = users.map((u: any) => u.id);
 
     const orderCounts = await prisma.order.groupBy({
       by: ['userId'],
       where: { userId: { in: userIds } },
       _count: { id: true },
     });
-    const orderCountMap = new Map(orderCounts.map(o => [o.userId, o._count.id]));
+    const orderCountMap = new Map(orderCounts.map((o: any) => [o.userId, o._count.id]));
 
     const redeemCounts = await prisma.redeemKey.groupBy({
       by: ['usedBy'],
       where: { usedBy: { in: userIds }, used: true },
       _count: { id: true },
     });
-    const redeemCountMap = new Map(redeemCounts.map(r => [r.usedBy, r._count.id]));
+    const redeemCountMap = new Map(redeemCounts.map((r: any) => [r.usedBy, r._count.id]));
 
-    const usersWithStats = users.map(u => ({
+    const usersWithStats = users.map((u: any) => ({
       ...u,
       orderCount: orderCountMap.get(u.id) || 0,
       redeemCount: redeemCountMap.get(u.id) || 0,
