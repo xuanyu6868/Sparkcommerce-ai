@@ -29,16 +29,20 @@ cd server
 npx prisma db push --skip-generate
 cd ..
 
-# 5. 构建前端
-echo -e "${GREEN}[5/7] 构建前端...${NC}"
-npm run build -w client
+# 5. 安装图片优化工具
+echo -e "${GREEN}[5/8] 安装图片优化工具...${NC}"
+apt-get install -y webp 2>/dev/null || echo "webp 工具暂不可用，跳过图片优化"
 
-# 6. 构建后端
-echo -e "${GREEN}[6/7] 构建后端...${NC}"
+# 6. 构建项目 (含图片压缩)
+echo -e "${GREEN}[6/8] 构建项目...${NC}"
+npm run build:prod
+
+# 7. 构建后端
+echo -e "${GREEN}[7/8] 构建后端...${NC}"
 npm run build -w server
 
-# 7. 启动 PM2
-echo -e "${GREEN}[7/7] 启动服务...${NC}"
+# 8. 启动 PM2
+echo -e "${GREEN}[8/8] 启动服务...${NC}"
 pm2 delete sparkcommerce 2>/dev/null || true
 pm2 start ecosystem.config.cjs
 pm2 save

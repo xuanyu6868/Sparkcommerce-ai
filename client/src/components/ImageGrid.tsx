@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ExternalLink, Heart, Copy, Download } from 'lucide-react';
-import { CardStack } from './LandingPage';
+import { CardStack } from './CardStack';
 
 export interface ImageItem {
   id: string;

@@ -3,20 +3,29 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ImageGrid, ImageItem } from './components/ImageGrid';
-import { ImageModal } from './components/ImageModal';
-import { LandingPage } from './components/LandingPage';
-import { Community } from './components/Community';
-import { Pricing } from './components/Pricing';
-import { Profile } from './components/Profile';
-import { AuthPage } from './components/AuthPage';
 import { authApi, userApi, imageApi, getToken, resolveAssetUrl } from './services/api';
 import { ContactFooter } from './components/ContactFooter';
-import { CompanyProfileTransition } from './components/CompanyProfileTransition';
-import { AdminPanel } from './components/AdminPanel';
+
+const LandingPage = React.lazy(() => import('./components/LandingPage'));
+const Community = React.lazy(() => import('./components/Community'));
+const Pricing = React.lazy(() => import('./components/Pricing'));
+const Profile = React.lazy(() => import('./components/Profile'));
+const AuthPage = React.lazy(() => import('./components/AuthPage'));
+const AdminPanel = React.lazy(() => import('./components/AdminPanel'));
+const ImageModal = React.lazy(() => import('./components/ImageModal'));
+const CompanyProfileTransition = React.lazy(() => import('./components/CompanyProfileTransition'));
+
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="w-8 h-8 border-2 border-stone-900 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
 
 const SAMPLE_IMAGES: ImageItem[] = [
   {
@@ -287,19 +296,23 @@ export default function App() {
         isAdmin={isAdmin}
       />
 
-      {renderContent()}
+      <Suspense fallback={<PageLoader />}>
+        {renderContent()}
+      </Suspense>
 
       <ContactFooter />
 
-      <ImageModal
-        image={selectedImage}
-        onClose={() => setSelectedImage(null)}
-      />
+      <Suspense fallback={null}>
+        <ImageModal
+          image={selectedImage}
+          onClose={() => setSelectedImage(null)}
+        />
 
-      <CompanyProfileTransition
-        isOpen={isCompanyProfileOpen}
-        onClose={() => setIsCompanyProfileOpen(false)}
-      />
+        <CompanyProfileTransition
+          isOpen={isCompanyProfileOpen}
+          onClose={() => setIsCompanyProfileOpen(false)}
+        />
+      </Suspense>
     </div>
   );
 }
