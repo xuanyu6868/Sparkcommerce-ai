@@ -30,52 +30,52 @@ function PageLoader() {
 const SAMPLE_IMAGES: ImageItem[] = [
   {
     id: '0',
-    url: '/手表AI生成图.png',
+    url: '/手表AI生成图.webp',
     prompt: 'Luxury silver watch with complex inner gears, macro photography, studio lighting, sharp focus',
     tags: ['高级腕表', '商业摄影'],
     stackItems: [
-      { url: '/手表.png', title: '原始拍摄', engine: '基础模型' },
-      { url: '/手表AI生成图.png', title: '商业渲染', engine: '神经渲染引擎' }
+      { url: '/手表.webp', title: '原始拍摄', engine: '基础模型' },
+      { url: '/手表AI生成图.webp', title: '商业渲染', engine: '神经渲染引擎' }
     ]
   },
   {
     id: '1',
-    url: '/音响AI生成图.png',
+    url: '/音响AI生成图.webp',
     prompt: 'High-end smart speaker, minimalist design, dark studio background, cinematic lighting',
     tags: ['数码产品', '商业摄影', '宏距'],
     stackItems: [
-      { url: '/音响.png', title: '原始拍摄', engine: '基础模型' },
-      { url: '/音响AI生成图.png', title: '商业渲染', engine: '神经渲染引擎' }
+      { url: '/音响.webp', title: '原始拍摄', engine: '基础模型' },
+      { url: '/音响AI生成图.webp', title: '商业渲染', engine: '神经渲染引擎' }
     ]
   },
   {
     id: '2',
-    url: '/台灯AI生成图.png',
+    url: '/台灯AI生成图.webp',
     prompt: 'A minimalist modern desk lamp emitting warm light, placed on a wooden table, dark moody lighting',
     tags: ['家居设计', '柔光'],
     stackItems: [
-      { url: '/台灯.png', title: '原始拍摄', engine: '基础模型' },
-      { url: '/台灯AI生成图.png', title: '商业渲染', engine: '神经渲染引擎' }
+      { url: '/台灯.webp', title: '原始拍摄', engine: '基础模型' },
+      { url: '/台灯AI生成图.webp', title: '商业渲染', engine: '神经渲染引擎' }
     ]
   },
   {
     id: '3',
-    url: '/电动牙刷AI生成图.png',
+    url: '/电动牙刷AI生成图.webp',
     prompt: 'Premium electric toothbrush on water surface with ripples, product photography, studio lighting',
     tags: ['美妆个护', '生活方式', '商业摄影'],
     stackItems: [
-      { url: '/电动牙刷.png', title: '原始拍摄', engine: '基础模型' },
-      { url: '/电动牙刷AI生成图.png', title: '商业渲染', engine: '神经渲染引擎' }
+      { url: '/电动牙刷.webp', title: '原始拍摄', engine: '基础模型' },
+      { url: '/电动牙刷AI生成图.webp', title: '商业渲染', engine: '神经渲染引擎' }
     ]
   }
 ];
 
 const WARMUP_IMAGES = [
-  '/保鲜盒主图.png',
-  '/帆布包主图.png',
-  '/无线鼠标主图.png',
-  '/cup_raw.png',
-  '/cup_rendered.png',
+  '/保鲜盒主图.webp',
+  '/帆布包主图.webp',
+  '/无线鼠标主图.webp',
+  '/cup_raw.webp',
+  '/cup_rendered.webp',
 ];
 
 type AppView = 'home' | 'studio' | 'community' | 'pricing' | 'profile' | 'auth' | 'discover' | 'admin';

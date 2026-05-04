@@ -11,8 +11,8 @@ export const CardStack: React.FC<CardStackProps> = ({ mini = false, items, onIma
   const [isStackHovered, setIsStackHovered] = React.useState(false);
 
   const cards = items || [
-    { url: "/cup_raw.png", title: "原始拍摄", engine: "基础模型" },
-    { url: "/cup_rendered.png", title: "商业渲染", engine: "神经渲染引擎" }
+    { url: "/cup_raw.webp", title: "原始拍摄", engine: "基础模型" },
+    { url: "/cup_rendered.webp", title: "商业渲染", engine: "神经渲染引擎" }
   ];
 
   return (

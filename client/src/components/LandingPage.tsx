@@ -303,17 +303,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
       {
-        url: "/保鲜盒主图.png",
+        url: "/保鲜盒主图.webp",
         title: "清透质感",
         desc: "极致表现保鲜盒的晶莹材质与密封细节，通过虚实结合的光影，在货架丛中脱颖而出，激发食欲与整洁感。"
       },
       {
-        url: "/帆布包主图.png",
+        url: "/帆布包主图.webp",
         title: "文艺溢价",
         desc: "为简约帆布包注入自然采光氛围，模拟真实生活场景中的柔和阴影，大幅提升产品的审美格调与品牌溢价。"
       },
       {
-        url: "/无线鼠标主图.png",
+        url: "/无线鼠标主图.webp",
         title: "科技跃迁",
         desc: "运用硬核工业风背景与精准轮廓光，渲染出无线鼠标的未来主义美学，精准击穿科技极客的点击决策点。"
       }
@@ -567,20 +567,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
             </div>
             <div className="aspect-[3/4] relative group">
                <CardStack mini onImageClick={(image) => setSelectedImage({ id: `card-mini-${image.title}`, url: image.url, prompt: image.engine, tags: ['展示样例', image.title] })} items={[
-                 { url: "/headphones_raw.png", title: "原始拍摄", engine: "基础模型" },
-                 { url: "/headphones_rendered.png", title: "商业渲染", engine: "神经渲染引擎" }
+                 { url: "/headphones_raw.webp", title: "原始拍摄", engine: "基础模型" },
+                 { url: "/headphones_rendered.webp", title: "商业渲染", engine: "神经渲染引擎" }
                ]} />
             </div>
             <div className="aspect-[3/4] relative group">
                <CardStack mini onImageClick={(image) => setSelectedImage({ id: `card-mini-${image.title}`, url: image.url, prompt: image.engine, tags: ['展示样例', image.title] })} items={[
-                 { url: "/oil_raw.png", title: "原始拍摄", engine: "基础模型" },
-                 { url: "/oil_rendered.png", title: "商业渲染", engine: "神经渲染引擎" }
+                 { url: "/oil_raw.webp", title: "原始拍摄", engine: "基础模型" },
+                 { url: "/oil_rendered.webp", title: "商业渲染", engine: "神经渲染引擎" }
                ]} />
             </div>
             <div className="aspect-[3/4] relative group">
                <CardStack mini onImageClick={(image) => setSelectedImage({ id: `card-mini-${image.title}`, url: image.url, prompt: image.engine, tags: ['展示样例', image.title] })} items={[
-                 { url: "/shoes_raw.png", title: "原始拍摄", engine: "基础模型" },
-                 { url: "/shoes_rendered.png", title: "商业渲染", engine: "神经渲染引擎" }
+                 { url: "/shoes_raw.webp", title: "原始拍摄", engine: "基础模型" },
+                 { url: "/shoes_rendered.webp", title: "商业渲染", engine: "神经渲染引擎" }
                ]} />
             </div>
           </div>
